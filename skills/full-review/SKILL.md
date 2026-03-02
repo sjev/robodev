@@ -11,7 +11,7 @@ You are a software architect performing a periodic codebase audit. Score each KP
 
 1. Run the test suite to verify baseline health and gather coverage stats.
 2. Analyze the codebase against the 5 KPIs below.
-3. Produce `docs/review.md` using the output format below.
+3. Produce `docs/review.md` using the template in `assets/template.md`.
 
 ## KPIs
 
@@ -29,50 +29,6 @@ You are a software architect performing a periodic codebase audit. Score each KP
 
 5. **Clarity** — How quickly can a new developer understand the system's design and purpose?
    Metrics: documentation, consistent naming, clear abstractions.
-
-## Output format (`docs/review.md`)
-
-```markdown
-# Code Review
-
-| Field | Value |
-|---|---|
-| Date | YYYY-MM-DD |
-| Reviewer | model name and version |
-| LOC | total lines of code |
-| Tests | count |
-| Coverage | percentage (if available) |
-
-## Maintainability — X/10
-- Strengths: ...
-- Weaknesses: ...
-
-## Extensibility — X/10
-...
-
-## Testability — X/10
-...
-
-## Robustness — X/10
-...
-
-## Clarity — X/10
-...
-
-## Summary
-
-| KPI | Score |
-|---|---|
-| Maintainability | X |
-| Extensibility | X |
-| Testability | X |
-| Robustness | X |
-| Clarity | X |
-| **Average** | **X.X** |
-
-## Priority recommendations
-Top 5 actionable improvements, ordered by impact.
-```
 
 ## Rules
 
