@@ -57,16 +57,16 @@ robodev/
 │   └── skills/                                  # ② Agent Skills (open standard)
 │       ├── architect/
 │       │   └── SKILL.md
-│       ├── commit/
-│       │   └── SKILL.md
 │       ├── feature/
 │       │   ├── SKILL.md
 │       │   └── template.md                      #    Feature doc template
 │       ├── implement/
 │       │   └── SKILL.md
-│       ├── review/
+│       ├── feature-review/
 │       │   └── SKILL.md
-│       └── review-branch/
+│       ├── full-review/
+│       │   └── SKILL.md
+│       └── commit/
 │           └── SKILL.md
 ├── .github/
 │   └── copilot-instructions.md  → ../CLAUDE.md  # ③ Symlink (only one needed)
@@ -119,33 +119,31 @@ feature/
     └── sample.md      # Example output showing expected format
 ```
 
-## Skill design
+## Skill inventory
+
+Six skills cover the full development cycle. Each maps to a phase the architect
+controls.
+
+| Skill | Purpose | Invocation | Context |
+|---|---|---|---|
+| `/architect` | Create or update `docs/architecture.md` from user stories | User-only | Inline — needs Q&A with architect |
+| `/feature` | Design a single feature into `docs/features/<name>.md` | User-only | Inline — needs Q&A with architect |
+| `/implement` | Implement a feature design as code + tests | User-only | Inline — needs iterative approval |
+| `/feature-review` | Review current branch diff vs `main` | Both | Fork (`Explore`) — read-only, no side effects |
+| `/full-review` | Audit full codebase, score on KPIs | Both | Fork (`Explore`) — read-only analysis |
+| `/commit` | Stage and commit changes with conventional messages | User-only | Inline — needs approval |
 
 ### Invocation control
 
-Not every skill should be invocable the same way. The `disable-model-invocation`
-and `user-invocable` frontmatter fields control this:
-
-| Skill | Invocation | Rationale |
-|---|---|---|
-| `architect` | User-only (`disable-model-invocation: true`) | Architect decides when to start design |
-| `feature` | User-only | Architect decides which feature to design |
-| `implement` | User-only | Architect approves plan before code |
-| `commit` | User-only | Agent must not auto-commit |
-| `review` | Both (default) | Agent may suggest a review when relevant |
-| `review-branch` | Both (default) | Agent may offer to review after implementation |
+Skills that change code or history require explicit invocation (`disable-model-invocation: true`).
+Review skills are available to both user and agent — the agent may proactively suggest
+a review after implementation, which supports the cross-agent review pattern.
 
 ### Subagent execution
 
-Skills that benefit from isolation use `context: fork` to run in a subagent.
-This keeps the main conversation clean and prevents context pollution:
-
-| Skill | Context | Agent type | Rationale |
-|---|---|---|---|
-| `review` | `fork` | `Explore` | Read-only analysis, no side effects |
-| `review-branch` | `fork` | `Explore` | Read-only diff analysis |
-| `architect` | inline | — | Needs conversation history for Q&A |
-| `implement` | inline | — | Needs iterative approval loop |
+Review skills run in a forked `Explore` subagent. This isolates read-only analysis
+from the main conversation, prevents context pollution, and enables the cross-agent
+review pattern (different model/context than the implementing agent).
 
 ### Frontmatter conventions
 
@@ -182,27 +180,192 @@ allowed-tools: Read Grep Glob        # Optional: tool restrictions
 | Skills | `.claude/skills/<name>/SKILL.md` | Discovered natively via Agent Skills standard |
 | Path-scoped rules | `.github/instructions/*.instructions.md` | Optional; for language-specific guidance |
 
-## Workflow
+## Development cycle
 
-The workflow maps to skills. Each phase has a gate where the architect reviews
-before proceeding.
+The architect drives a repeatable cycle: **spec → design → implement → review → commit**.
+Every skill works identically in Claude Code CLI and Copilot CLI — same names, same
+arguments, same outputs. The only difference is the shell you type in.
 
 ```mermaid
 flowchart LR
-    A["/architect"] -->|review| B["/feature"]
-    B -->|review| C["/implement"]
-    C -->|review| D["/review-branch"]
-    D -->|merge| E["/commit"]
+    A["/architect"] -->|architect approves| B["/feature"]
+    B -->|architect approves| C["/implement"]
+    C -->|agent or architect| D["/feature-review"]
+    D -->|architect approves| E["/commit"]
+
+    F["/full-review"] -.->|periodic| A
 ```
 
-| Phase | Skill | Input | Output | Gate |
-|---|---|---|---|---|
-| **Spec** | `/architect` | User stories, context | `docs/architecture.md` | Architect approves architecture |
-| **Design** | `/feature` | Architecture doc + feature request | `docs/features/<name>.md` | Architect approves design |
-| **Implement** | `/implement` | Architecture + feature design | Code + tests | Architect approves plan, then each step |
-| **Review** | `/review-branch` | Branch diff vs `main` | Actionable findings | Architect addresses critical items |
-| **Commit** | `/commit` | Staged changes | Atomic conventional commits | Architect approves message(s) |
-| **Audit** | `/review` | Full codebase | Scored KPI report in `docs/review.md` | Periodic health check |
+### Phase 1 — Spec: `/architect`
+
+Create the project architecture document from user stories and context.
+
+The agent asks up to 5 clarifying questions, waits for answers, then produces
+`docs/architecture.md` with system overview, module boundaries, technology stack,
+and key decisions.
+
+**Claude Code CLI:**
+```
+$ claude
+> /architect user stories in docs/internal/user_stories.md
+```
+
+**Copilot CLI:**
+```
+$ copilot
+> /architect user stories in docs/internal/user_stories.md
+```
+
+**Gate:** Architect reads and approves the architecture document before proceeding.
+
+---
+
+### Phase 2 — Design: `/feature`
+
+Design a single feature against the approved architecture.
+
+The agent asks up to 3 clarifying questions about scope and acceptance criteria,
+then produces `docs/features/<feature-name>.md` with summary, scope, acceptance
+criteria, data model changes, execution flows, and API changes.
+
+**Claude Code CLI:**
+```
+> /feature add user authentication with JWT
+```
+
+**Copilot CLI:**
+```
+> /feature add user authentication with JWT
+```
+
+**Gate:** Architect reviews the design doc — especially acceptance criteria and
+affected modules. If the feature requires architecture changes, the agent flags
+`[ARCH CHANGE NEEDED: ...]` rather than silently proceeding.
+
+---
+
+### Phase 3 — Implement: `/implement`
+
+Implement the approved feature design as code and tests.
+
+The agent reads both `docs/architecture.md` and the feature design doc, then
+produces a numbered implementation plan at commit granularity. It waits for the
+architect to approve the plan before writing any code. Implementation proceeds
+one checklist item at a time, reporting which acceptance criteria now pass.
+
+**Claude Code CLI:**
+```
+> /implement docs/features/user-auth.md
+```
+
+**Copilot CLI:**
+```
+> /implement docs/features/user-auth.md
+```
+
+**Gate:** Architect approves the plan first, then reviews each implementation step.
+If the agent encounters a conflict with the design doc, it stops with
+`[BLOCKED: ...]` and waits.
+
+---
+
+### Phase 4 — Review: `/feature-review`
+
+Review the current branch diff against `main` for issues.
+
+Runs in a forked subagent (read-only, isolated context). This supports the
+cross-agent review pattern: the reviewing agent has no memory of the implementation
+decisions, so it catches blind spots the authoring agent would miss. Output is
+split into **Critical** (issues that will cause problems) and **Suggestions**
+(SOLID design improvements).
+
+**Claude Code CLI:**
+```
+> /feature-review
+> /feature-review path=src/auth/
+```
+
+**Copilot CLI:**
+```
+> /feature-review
+> /feature-review path=src/auth/
+```
+
+**Gate:** Architect addresses critical items before merging. Suggestions are
+optional but tracked.
+
+---
+
+### Phase 5 — Commit: `/commit`
+
+Stage and commit changes as atomic conventional commits.
+
+The agent runs `git status` and `git diff`, groups changes into logical commits,
+and proposes commit messages. Each commit follows conventional format:
+`type(scope): description`. The agent waits for approval before executing.
+
+**Claude Code CLI:**
+```
+> /commit
+```
+
+**Copilot CLI:**
+```
+> /commit
+```
+
+**Gate:** Architect approves commit messages and grouping before execution.
+
+---
+
+### Periodic — Audit: `/full-review`
+
+Full codebase health check, scored on 5 KPIs.
+
+Runs in a forked subagent. Produces `docs/review.md` with scores for
+maintainability, extensibility, testability, robustness, and clarity.
+Includes reviewer model/version, codebase stats, and top 5 priority
+recommendations. Use periodically (e.g., before a release or after a
+major feature lands), not on every commit.
+
+**Claude Code CLI:**
+```
+> /full-review
+```
+
+**Copilot CLI:**
+```
+> /full-review
+```
+
+---
+
+### End-to-end example
+
+A typical feature cycle using Claude Code for implementation and Copilot for review
+(cross-agent review pattern):
+
+```bash
+# 1. Branch
+git checkout -b feat/user-auth
+
+# 2. Design (Claude Code — high-tier model)
+claude
+> /feature add JWT-based user authentication
+
+# 3. Architect reviews docs/features/user-auth.md, edits if needed
+
+# 4. Implement (Claude Code — standard-tier model)
+> /implement docs/features/user-auth.md
+# ... approve plan, review each step ...
+
+# 5. Review with a different agent (Copilot — cross-agent review)
+copilot
+> /feature-review
+
+# 6. Address critical findings, then commit (either tool)
+> /commit
+```
 
 ### Model selection
 
@@ -212,6 +375,7 @@ Use lighter models for low-risk tasks to control cost:
 |---|---|---|
 | Architecture, design | High | Claude Opus, GPT-4o |
 | Implementation | Standard | Claude Sonnet, GPT-4.1 |
+| Reviews | Standard | Claude Sonnet, GPT-4.1 |
 | Commits, formatting | Fast | Claude Haiku, GPT-4.1-mini |
 
 ## Constraints and conventions
