@@ -26,4 +26,23 @@ Architects who want AI agents to handle implementation while maintaining control
 - `/full-review` — Audit entire codebase
 - `/commit` — Create atomic conventional commits
 
-See `docs/architecture.md` for details. 
+See `docs/architecture.md` for details.
+
+## Setup
+
+Requires [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
+invoke init                        # clones agentskills/agentskills, installs skills-ref
+```
+
+## Validate skills
+
+```bash
+invoke validate
+```
+
+Runs `skills-ref validate` against every skill directory under `skills/`.
