@@ -1,64 +1,18 @@
 #!/usr/bin/env sh
 # Install robodev skills into the current project directory.
 # Usage: curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
-#        bash install.sh [--claude] [--copilot] [--no-scaffold] [--dir <path>]
 
 set -e
 
 REPO_URL="https://github.com/sjev/robodev.git"
 ROBODEV_DIR="${ROBODEV_DIR:-$HOME/.local/share/robodev}"
 TARGET_DIR="$(pwd)"
-DO_CLAUDE=1
-DO_COPILOT=1
-DO_SCAFFOLD=1
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 info()    { printf '  \033[34m•\033[0m %s\n' "$*"; }
 success() { printf '  \033[32m✓\033[0m %s\n' "$*"; }
-warn()    { printf '  \033[33m!\033[0m %s\n' "$*"; }
 die()     { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
-
-usage() {
-    cat <<EOF
-robodev installer — copy AI workflow skills into the current project
-
-Usage:
-  curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
-  bash install.sh [OPTIONS]
-
-Options:
-  --claude        Install Claude Code skills only (.claude/skills/)
-  --copilot       Install GitHub Copilot prompts only (.github/prompts/)
-  --no-scaffold   Skip docs/ and CLAUDE.md scaffolding
-  --dir <path>    robodev cache directory (default: ~/.local/share/robodev)
-  -h, --help      Show this help
-
-By default installs for both tools and scaffolds docs/.
-EOF
-}
-
-# ── arg parsing ────────────────────────────────────────────────────────────────
-
-parse_args() {
-    EXPLICIT_TOOL=0
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            --claude)      EXPLICIT_TOOL=1; DO_COPILOT=0 ;;
-            --copilot)     EXPLICIT_TOOL=1; DO_CLAUDE=0 ;;
-            --no-scaffold) DO_SCAFFOLD=0 ;;
-            --dir)         shift; ROBODEV_DIR="$1" ;;
-            -h|--help)     usage; exit 0 ;;
-            *) die "unknown option: $1" ;;
-        esac
-        shift
-    done
-    # if user picked one tool explicitly, re-enable that tool
-    if [ "$EXPLICIT_TOOL" = "1" ]; then
-        # the flags above already set the right combination
-        :
-    fi
-}
 
 # ── robodev clone/update ───────────────────────────────────────────────────────
 
@@ -121,46 +75,17 @@ install_copilot() {
     success "Copilot prompts installed in .github/prompts/"
 }
 
-# ── scaffold ──────────────────────────────────────────────────────────────────
-
-scaffold_docs() {
-    printf '\nScaffolding project structure\n'
-    mkdir -p "$TARGET_DIR/docs/features"
-    info "docs/ and docs/features/ created"
-
-    instructions="$ROBODEV_DIR/skills/instructions.md"
-    claude_md="$TARGET_DIR/CLAUDE.md"
-
-    if [ ! -f "$instructions" ]; then
-        warn "skills/instructions.md not found — skipping CLAUDE.md scaffold"
-        return
-    fi
-
-    if [ -f "$claude_md" ]; then
-        printf '\n\n---\n# robodev workflow instructions\n\n' >> "$claude_md"
-        cat "$instructions" >> "$claude_md"
-        success "Appended instructions to CLAUDE.md"
-    else
-        cp "$instructions" "$claude_md"
-        success "Created CLAUDE.md from instructions.md"
-    fi
-}
-
 # ── main ──────────────────────────────────────────────────────────────────────
 
 main() {
-    parse_args "$@"
-
     printf 'robodev installer\n'
     printf 'Target: %s\n' "$TARGET_DIR"
 
     command -v git >/dev/null 2>&1 || die "git is required but not found"
 
     install_robodev
-
-    [ "$DO_CLAUDE" = "1" ]    && install_claude
-    [ "$DO_COPILOT" = "1" ]   && install_copilot
-    [ "$DO_SCAFFOLD" = "1" ]  && scaffold_docs
+    install_claude
+    install_copilot
 
     printf '\nDone. Re-run this script to update.\n'
 }
