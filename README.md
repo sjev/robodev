@@ -28,22 +28,7 @@ curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
 This clones robodev to `~/.local/share/robodev/` and installs skills into:
 
 - `.claude/skills/` — Claude Code
-- `.github/prompts/` — GitHub Copilot
-
-It also creates `docs/` and `CLAUDE.md` with workflow instructions.
-
-**Options:**
-
-```bash
-# Claude Code only
-curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh -s -- --claude
-
-# GitHub Copilot only
-curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh -s -- --copilot
-
-# Skip docs/ and CLAUDE.md scaffolding
-curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh -s -- --no-scaffold
-```
+- `.github/skills/` — GitHub Copilot CLI
 
 Re-run the same command to update skills.
 

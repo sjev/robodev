@@ -63,16 +63,17 @@ install_claude() {
 _install_copilot_skill() {
     skill_name="$1"
     skill_dir="$2"
-    dest="$TARGET_DIR/.github/prompts/${skill_name}.prompt.md"
-    cp "${skill_dir}SKILL.md" "$dest"
-    info "  $skill_name → .github/prompts/${skill_name}.prompt.md"
+    dest="$TARGET_DIR/.github/skills/$skill_name"
+    rm -rf "$dest"
+    cp -r "$skill_dir" "$dest"
+    info "  $skill_name → .github/skills/$skill_name/"
 }
 
 install_copilot() {
-    printf '\nInstalling GitHub Copilot prompts\n'
-    mkdir -p "$TARGET_DIR/.github/prompts"
+    printf '\nInstalling GitHub Copilot skills\n'
+    mkdir -p "$TARGET_DIR/.github/skills"
     each_skill _install_copilot_skill
-    success "Copilot prompts installed in .github/prompts/"
+    success "Copilot skills installed in .github/skills/"
 }
 
 # ── main ──────────────────────────────────────────────────────────────────────
