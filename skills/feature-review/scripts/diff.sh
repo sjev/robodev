@@ -1,26 +1,28 @@
 #!/usr/bin/env bash
-# Show the diff between the current branch and a base branch.
-# Usage: bash scripts/diff.sh [BASE_BRANCH]
+# Show all uncommitted changes (staged, unstaged, and untracked files).
+# Usage: bash scripts/diff.sh
 
 set -euo pipefail
 
 if [[ "${1:-}" == "--help" ]]; then
-  echo "Usage: bash scripts/diff.sh [BASE_BRANCH]"
+  echo "Usage: bash scripts/diff.sh"
   echo ""
-  echo "Arguments:"
-  echo "  BASE_BRANCH   Branch to diff against (default: main)"
-  echo ""
-  echo "Examples:"
-  echo "  bash scripts/diff.sh"
-  echo "  bash scripts/diff.sh develop"
+  echo "Shows all uncommitted changes: staged, unstaged, and untracked files."
   exit 0
 fi
 
-BASE="${1:-main}"
+echo "=== Staged changes ==="
+git diff --cached
 
-if ! git rev-parse --verify "$BASE" &>/dev/null; then
-  echo "Error: branch '$BASE' not found."
-  exit 1
-fi
+echo ""
+echo "=== Unstaged changes ==="
+git diff
 
-git diff "${BASE}...HEAD"
+echo ""
+echo "=== Untracked files ==="
+git ls-files --others --exclude-standard | while read -r f; do
+  echo "--- /dev/null"
+  echo "+++ b/$f"
+  cat "$f"
+  echo ""
+done
