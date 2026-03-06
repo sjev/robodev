@@ -6,16 +6,10 @@ Tool-agnostic workflow skills for architects steering AI coding agents.
 
 Reusable workflow skills using the [Agent Skills](https://agentskills.io) standard. Works with Claude Code CLI, Copilot CLI, and other compatible tools.
 
-## Problems it solves
-
-- **Prompt drift**: Single source of truth across tools
-- **Loss of control**: Architect gates at each phase
-- **Context bloat**: Minimal, focused instructions
-- **Blind spots**: Cross-agent review
-
 ## Who is this for?
 
 Architects who want AI agents to handle implementation while maintaining control and producing atomic, reviewable commits.
+
 
 ## Install
 
@@ -25,7 +19,8 @@ Run this in your project directory (requires `git`):
 curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
 ```
 
-This clones robodev to `~/.local/share/robodev/` and installs skills into:
+
+This installs skills into:
 
 - `.claude/skills/` — Claude Code
 - `.github/skills/` — GitHub Copilot CLI
@@ -46,6 +41,10 @@ After install, the following slash commands are available in your AI coding tool
 | `/commit` | Stage and commit with conventional messages |
 
 **Typical flow:**
+
+
+Create `docs/user_stories.md`. Write them in a form "As a ... I want ... So that ..."
+See [docs/user_stories.md](docs/user_stories.md) for user stories for this project.
 
 ```bash
 git checkout -b feat/my-feature
