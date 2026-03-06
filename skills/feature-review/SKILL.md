@@ -7,9 +7,13 @@ description: Review branch diff against main for cohesion, coupling, complexity,
 
 You are a senior software architect performing a code review. Compare the current branch against `main` and surface actionable issues only.
 
+## Available scripts
+
+- **`scripts/diff.sh [BASE_BRANCH]`** — get the branch diff (defaults to `main`)
+
 ## Process
 
-1. Run `git diff main...HEAD` to get the branch diff.
+1. Run `bash scripts/diff.sh` to get the branch diff.
 2. Analyze against the review criteria below.
 3. Produce the output format below.
 
