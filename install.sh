@@ -28,52 +28,65 @@ install_robodev() {
     fi
 }
 
-# ── skill iteration helper ────────────────────────────────────────────────────
+# ── skill linking ─────────────────────────────────────────────────────────────
 
-each_skill() {
-    # calls $1 with each skill directory name
-    callback="$1"
+# Link all skill dirs into a destination directory.
+link_skills() {
+    dest_base="$1"
+    mkdir -p "$dest_base"
     for skill_dir in "$ROBODEV_DIR/skills"/*/; do
         [ -f "${skill_dir}SKILL.md" ] || continue
         skill_name="$(basename "$skill_dir")"
-        "$callback" "$skill_name" "$skill_dir"
+        dest="$dest_base/$skill_name"
+        rm -rf "$dest"
+        ln -s "$skill_dir" "$dest"
+        info "  $skill_name → $dest_base/$skill_name"
     done
-}
-
-# ── claude code ───────────────────────────────────────────────────────────────
-
-_install_claude_skill() {
-    skill_name="$1"
-    skill_dir="$2"
-    dest="$TARGET_DIR/.claude/skills/$skill_name"
-    rm -rf "$dest"
-    cp -r "$skill_dir" "$dest"
-    info "  $skill_name → .claude/skills/$skill_name/"
 }
 
 install_claude() {
     printf '\nInstalling Claude Code skills\n'
-    mkdir -p "$TARGET_DIR/.claude/skills"
-    each_skill _install_claude_skill
-    success "Claude Code skills installed in .claude/skills/"
-}
-
-# ── github copilot ────────────────────────────────────────────────────────────
-
-_install_copilot_skill() {
-    skill_name="$1"
-    skill_dir="$2"
-    dest="$TARGET_DIR/.github/skills/$skill_name"
-    rm -rf "$dest"
-    cp -r "$skill_dir" "$dest"
-    info "  $skill_name → .github/skills/$skill_name/"
+    link_skills "$TARGET_DIR/.claude/skills"
+    success "Claude Code skills linked in .claude/skills/"
 }
 
 install_copilot() {
     printf '\nInstalling GitHub Copilot skills\n'
-    mkdir -p "$TARGET_DIR/.github/skills"
-    each_skill _install_copilot_skill
-    success "Copilot skills installed in .github/skills/"
+    link_skills "$TARGET_DIR/.github/skills"
+    success "Copilot skills linked in .github/skills/"
+}
+
+# ── scaffold ──────────────────────────────────────────────────────────────────
+
+scaffold_docs() {
+    printf '\nScaffolding project structure\n'
+
+    mkdir -p "$TARGET_DIR/docs/features"
+    info "docs/ and docs/features/ created"
+
+    instructions="$ROBODEV_DIR/skills/instructions.md"
+    claude_md="$TARGET_DIR/CLAUDE.md"
+
+    if [ -f "$instructions" ]; then
+        if [ -f "$claude_md" ]; then
+            printf '\n\n---\n# robodev workflow instructions\n\n' >> "$claude_md"
+            cat "$instructions" >> "$claude_md"
+            success "Appended instructions to CLAUDE.md"
+        else
+            cp "$instructions" "$claude_md"
+            success "Created CLAUDE.md from instructions.md"
+        fi
+    fi
+
+    # Exclude skill symlinks from git tracking
+    gitignore="$TARGET_DIR/.gitignore"
+    for entry in '.claude/skills/' '.github/skills/'; do
+        if [ -f "$gitignore" ] && grep -qF "$entry" "$gitignore"; then
+            continue
+        fi
+        printf '%s\n' "$entry" >> "$gitignore"
+    done
+    success "Added skill dirs to .gitignore"
 }
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -87,8 +100,9 @@ main() {
     install_robodev
     install_claude
     install_copilot
+    scaffold_docs
 
-    printf '\nDone. Re-run this script to update.\n'
+    printf '\nDone. Skills update automatically when robodev is updated.\n'
 }
 
 main "$@"
