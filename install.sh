@@ -64,19 +64,19 @@ scaffold_docs() {
     mkdir -p "$TARGET_DIR/docs/features"
     info "docs/ and docs/features/ created"
 
-    instructions="$ROBODEV_DIR/skills/instructions.md"
-    claude_md="$TARGET_DIR/CLAUDE.md"
+    # instructions="$ROBODEV_DIR/skills/instructions.md"
+    # claude_md="$TARGET_DIR/CLAUDE.md"
 
-    if [ -f "$instructions" ]; then
-        if [ -f "$claude_md" ]; then
-            printf '\n\n---\n# robodev workflow instructions\n\n' >> "$claude_md"
-            cat "$instructions" >> "$claude_md"
-            success "Appended instructions to CLAUDE.md"
-        else
-            cp "$instructions" "$claude_md"
-            success "Created CLAUDE.md from instructions.md"
-        fi
-    fi
+    # if [ -f "$instructions" ]; then
+    #     if [ -f "$claude_md" ]; then
+    #         printf '\n\n---\n# robodev workflow instructions\n\n' >> "$claude_md"
+    #         cat "$instructions" >> "$claude_md"
+    #         success "Appended instructions to CLAUDE.md"
+    #     else
+    #         cp "$instructions" "$claude_md"
+    #         success "Created CLAUDE.md from instructions.md"
+    #     fi
+    # fi
 
     # Exclude skill symlinks from git tracking
     gitignore="$TARGET_DIR/.gitignore"
