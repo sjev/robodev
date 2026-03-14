@@ -35,13 +35,13 @@ After install, the following slash commands are available in your AI coding tool
 |---|---|
 | `/architect` | Create or update `docs/architecture.md` from user stories |
 | `/feature` | Design a feature into `docs/features/<name>.md` |
+| `/tdd-tests` | Write failing tests from a feature's Test Plan (Red phase) |
 | `/implement` | Implement a feature design as code + tests |
 | `/feature-review` | Review branch changes vs `main` |
 | `/full-review` | Audit entire codebase on 5 KPIs |
 | `/commit` | Stage and commit with conventional messages |
 
 **Typical flow:**
-
 
 Create `docs/user_stories.md`. Write them in a form "As a ... I want ... So that ..."
 See [docs/user_stories.md](docs/user_stories.md) for user stories for this project.
@@ -50,12 +50,18 @@ See [docs/user_stories.md](docs/user_stories.md) for user stories for this proje
 git checkout -b feat/my-feature
 > /architect          # design or update architecture
 > /feature my-feature # design the feature
-> /implement docs/features/my-feature.md
+> /tdd-tests my-feature # write failing tests from the spec's Test Plan
+> /implement docs/features/my-feature.md # make tests pass (Green phase)
 > /feature-review
 > /commit
 ```
 
 Each step requires explicit architect approval before the agent proceeds.
+
+Notes:
+- `docs/features/<name>.md` includes a `Status:` field (starts as `draft`). After implementation, `/implement` sets it to `implemented`.
+- Feature specs are expected to include a Test Plan. `/feature-review` checks acceptance criteria and test coverage against that plan.
+- `/tdd-tests` and `/implement` assume your project’s test command is `invoke test` (adjust the skills if you use a different runner).
 
 See `docs/architecture.md` for the full workflow.
 
