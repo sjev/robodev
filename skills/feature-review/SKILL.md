@@ -31,6 +31,13 @@ Only flag issues — do not compliment.
 
 Compare the changes against the **acceptance criteria** in the feature spec. Flag any acceptance criteria that are not addressed or only partially implemented.
 
+### Test coverage
+
+If the feature spec has a **test plan**, verify:
+- Every test plan item (T-01, T-02, …) has a corresponding test function.
+- All tests pass.
+- Flag any AC without test coverage.
+
 ### Code quality
 
 - **Cohesion:** unclear responsibilities, "god objects", scattered logic.
@@ -48,6 +55,12 @@ For each acceptance criterion in the spec, one of:
 - **Done** — fully addressed
 - **Partial** — started but incomplete, with explanation
 - **Missing** — not addressed at all
+
+### Test coverage
+For each test plan item:
+- **Covered** — test exists and passes
+- **Failing** — test exists but fails
+- **Missing** — no corresponding test
 
 ### Critical
 Issues that may cause bugs, security problems, or significant maintenance burden. Each bullet: `file:line` (or `file:function`) — what to change — why.
