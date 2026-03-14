@@ -26,8 +26,10 @@ robodev/
 │   ├── instructions.md                          # Project instructions template
 │   ├── architect/SKILL.md
 │   ├── feature/SKILL.md + template.md
+│   ├── tdd-tests/SKILL.md
 │   ├── implement/SKILL.md
 │   ├── feature-review/SKILL.md
+│   ├── merge/SKILL.md
 │   ├── full-review/SKILL.md
 │   └── commit/SKILL.md
 ├── docs/
@@ -49,11 +51,13 @@ locations (e.g., `.claude/skills/`, `.github/copilot-instructions.md`).
 | Skill | Purpose | Invocation | Context |
 |---|---|---|---|
 | `/architect` | Create/update `docs/architecture.md` from user stories | User-only | Inline |
-| `/feature` | Design a feature into `docs/features/<name>.md` | User-only | Inline |
+| `/feature` | Create/switch feature branch and write `docs/features/<name>.md` | User-only | Inline |
+| `/tdd-tests` | Write failing tests from a feature test plan | User-only | Inline |
 | `/implement` | Implement a feature design as code + tests | User-only | Inline |
-| `/feature-review` | Review branch diff vs `main` | Both | Fork (Explore subagent) |
+| `/commit` | Stage and commit feature-branch changes with conventional messages | User-only | Inline |
+| `/feature-review` | Review committed feature-branch diff vs `main` | Both | Fork (Explore subagent) |
+| `/merge` | Merge approved feature branch into `main` and delete it | User-only | Inline |
 | `/full-review` | Audit full codebase, score on 5 KPIs | Both | Fork (Explore subagent) |
-| `/commit` | Stage and commit with conventional messages | User-only | Inline |
 
 Code-changing skills require explicit user invocation. Review skills run in forked
 subagents (read-only, isolated context) enabling cross-agent review — a different
@@ -64,38 +68,45 @@ model reviews than the one that authored the code.
 ```mermaid
 flowchart LR
     A["/architect"] -->|approve| B["/feature"]
-    B -->|approve| C["/implement"]
-    C -->|auto or manual| D["/feature-review"]
+    B -->|approve| C["/tdd-tests"]
+    C -->|approve| D["/implement"]
     D -->|approve| E["/commit"]
-    F["/full-review"] -.->|periodic| A
+    E -->|review ready| F["/feature-review"]
+    F -->|approve| G["/merge"]
+    H["/full-review"] -.->|periodic| A
 ```
 
 1. **`/architect`** — agent asks clarifying questions, produces architecture doc. Gate: architect approves.
-2. **`/feature`** — agent designs one feature, produces design doc. Gate: architect approves. Flags `[ARCH CHANGE NEEDED]` if architecture needs updating.
-3. **`/implement`** — agent reads architecture + design doc, proposes numbered plan at commit granularity. Gate: architect approves plan, then each step. Agent stops with `[BLOCKED]` on conflicts.
-4. **`/feature-review`** — forked subagent reviews branch diff. Output: Critical issues + Suggestions. Gate: address criticals before merge.
-5. **`/commit`** — agent groups changes into atomic conventional commits (`type(scope): description`). Gate: architect approves before execution.
-6. **`/full-review`** (periodic) — forked subagent scores codebase on 5 KPIs, produces `docs/review.md`.
+2. **`/feature`** — agent creates or switches to `feat/<name>` from `main`, then writes the feature design doc. Gate: architect approves. Flags `[ARCH CHANGE NEEDED]` if architecture needs updating.
+3. **`/tdd-tests`** — agent writes failing tests from the feature Test Plan on the feature branch. Gate: architect approves the Red phase.
+4. **`/implement`** — agent reads architecture + design doc, proposes numbered plan at commit granularity, then implements on the feature branch. Gate: architect approves plan, then each step. Agent stops with `[BLOCKED]` on conflicts.
+5. **`/commit`** — agent groups feature-branch changes into atomic conventional commits (`type(scope): description`). Gate: architect approves before execution.
+6. **`/feature-review`** — forked subagent reviews the committed feature-branch diff against `main`. Output: Critical issues + Suggestions. Gate: address criticals before merge.
+7. **`/merge`** — agent merges the approved feature branch into `main` with a merge commit, marks the feature as `merged`, and deletes the local feature branch.
+8. **`/full-review`** (periodic) — forked subagent scores codebase on 5 KPIs, produces `docs/review.md`.
 
 ### Example flow
 
 ```bash
-git checkout -b feat/user-auth
-> /feature add JWT-based user authentication   # design
+> /feature user-auth                           # create/switch feat/user-auth and design
 # architect reviews docs/features/user-auth.md
-> /implement docs/features/user-auth.md        # implement
-> /feature-review                              # review (use different agent if possible)
-> /commit                                      # commit
+> /tdd-tests user-auth                         # write failing tests
+# architect reviews failing tests and implementation plan
+> /implement docs/features/user-auth.md        # implement on the feature branch
+> /commit                                      # create atomic commits
+> /feature-review user-auth                    # review (use different agent if possible)
+> /merge user-auth                             # merge to main and delete the branch
 ```
 
 ## Constraints
 
 1. **Agents do not make architectural decisions** — flag with `[BLOCKED]` or `[ARCH CHANGE NEEDED]` and wait.
-2. **Atomic conventional commits** — `type(scope): description`.
-3. **No new dependencies** unless in the design doc.
-4. **Concise documents** — no filler, no "TBD", no placeholders.
-5. **Mermaid only** for diagrams.
-6. **Cross-agent review** when practical.
+2. **Dedicated feature branches** — create work on `feat/<name>`, not directly on `main`.
+3. **Atomic conventional commits** — `type(scope): description`.
+4. **No new dependencies** unless in the design doc.
+5. **Concise documents** — no filler, no "TBD", no placeholders.
+6. **Mermaid only** for diagrams.
+7. **Cross-agent review** when practical.
 
 ## Open questions
 

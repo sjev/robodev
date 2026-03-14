@@ -31,6 +31,18 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+CURRENT_BRANCH="$(git branch --show-current)"
+
+if [[ -z "$CURRENT_BRANCH" ]]; then
+  echo "Error: not on a branch."
+  exit 1
+fi
+
+if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
+  echo "Error: refusing to commit directly on '$CURRENT_BRANCH'. Create or switch to a feature branch first."
+  exit 1
+fi
+
 if [[ -z "$MESSAGE" ]]; then
   echo "Error: --message is required."
   echo ""

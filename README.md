@@ -34,12 +34,13 @@ After install, the following slash commands are available in your AI coding tool
 | Command | Description |
 |---|---|
 | `/architect` | Create or update `docs/architecture.md` from user stories |
-| `/feature` | Design a feature into `docs/features/<name>.md` |
+| `/feature` | Create or switch to `feat/<name>`, then design the feature into `docs/features/<name>.md` |
 | `/tdd-tests` | Write failing tests from a feature's Test Plan (Red phase) |
 | `/implement` | Implement a feature design as code + tests |
-| `/feature-review` | Review branch changes vs `main` |
+| `/commit` | Stage and commit on the active feature branch with conventional messages |
+| `/feature-review` | Review committed branch changes vs `main` |
+| `/merge` | Merge the approved feature branch into `main` with a merge commit, then delete it |
 | `/full-review` | Audit entire codebase on 5 KPIs |
-| `/commit` | Stage and commit with conventional messages |
 
 **Typical flow:**
 
@@ -47,20 +48,22 @@ Create `docs/user_stories.md`. Write them in a form "As a ... I want ... So that
 See [docs/user_stories.md](docs/user_stories.md) for user stories for this project.
 
 ```bash
-git checkout -b feat/my-feature
-> /architect          # design or update architecture
-> /feature my-feature # design the feature
+> /architect            # design or update architecture
+> /feature my-feature   # create/switch feat/my-feature and write the spec
 > /tdd-tests my-feature # write failing tests from the spec's Test Plan
 > /implement docs/features/my-feature.md # make tests pass (Green phase)
-> /feature-review
-> /commit
+> /commit               # create atomic commits on the feature branch
+> /feature-review my-feature
+> /merge my-feature
 ```
 
 Each step requires explicit architect approval before the agent proceeds.
 
 Notes:
-- `docs/features/<name>.md` includes a `Status:` field (starts as `draft`). After implementation, `/implement` sets it to `implemented`.
-- Feature specs are expected to include a Test Plan. `/feature-review` checks acceptance criteria and test coverage against that plan.
+- `docs/features/<name>.md` includes a `Status:` field. The normal progression is `draft` → `implemented` → `approved` or `changes-requested` → `merged`.
+- `/feature` creates or switches to `feat/<name>` from `main`, so the feature branch becomes the workspace for `/tdd-tests`, `/implement`, and `/commit`.
+- Feature specs are expected to include a Test Plan. `/feature-review` checks acceptance criteria and test coverage against the committed branch diff versus `main`.
+- `/merge` uses a merge commit and deletes the local feature branch after success.
 - `/tdd-tests` and `/implement` assume your project’s test command is `invoke test` (adjust the skills if you use a different runner).
 
 See `docs/architecture.md` for the full workflow.

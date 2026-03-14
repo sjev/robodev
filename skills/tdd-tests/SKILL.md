@@ -1,6 +1,6 @@
 ---
 name: tdd-tests
-description: Write failing tests from a feature's test plan. Produces the Red phase of TDD — all tests must exist and fail before implementation begins.
+description: Write failing tests from a feature's test plan on the active feature branch. Produces the Red phase of TDD before implementation begins.
 ---
 
 # TDD Tests
@@ -15,13 +15,14 @@ If the feature name is not provided, ask the user: **"Which feature's tests shou
 ## Process
 
 1. Read `docs/features/<feature-name>.md` — focus on the **Test Plan** and **Acceptance Criteria** sections. If no test plan exists, flag `[BLOCKED: feature spec has no test plan — run /feature first]` and stop.
-2. Read `docs/architecture.md` for module boundaries and conventions.
-3. Write test code following the test-writing guidelines below.
-4. Run `invoke test` to verify:
-   - All new tests are **collected** (no syntax/import errors).
-   - All new tests **fail** (Red phase confirmed).
-   - Pre-existing tests still **pass** (no regressions).
-5. Present the test code and run results. **Wait for architect approval before proceeding.**
+2. Confirm you are on the feature branch created for this work. If you are on `main`, stop with `[BLOCKED: create or switch to the feature branch with /feature first]`.
+3. Read `docs/architecture.md` for module boundaries and conventions.
+4. Write test code following the test-writing guidelines below.
+5. Run `invoke test` to verify:
+    - All new tests are **collected** (no syntax/import errors).
+    - All new tests **fail** (Red phase confirmed).
+    - Pre-existing tests still **pass** (no regressions).
+6. Present the test code and run results. **Wait for architect approval before proceeding.**
 
 ## Test-writing guidelines
 
@@ -34,7 +35,8 @@ If the feature name is not provided, ask the user: **"Which feature's tests shou
 ## Rules
 
 - Do NOT write production code. Only test code.
-- Do NOT commit. Tests are uncommitted until `/implement` makes them green.
+- Work on the active feature branch, not on `main`.
+- Do NOT commit as part of this skill. `/commit` handles commits after implementation is complete on the feature branch.
 - One test file per feature unless the feature spans multiple modules, in which case group tests by module.
 - If the test plan is ambiguous, ask for clarification — do not guess.
 - Mark tests that require external resources (API, network) with appropriate pytest markers.

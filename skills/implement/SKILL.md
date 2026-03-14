@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a feature from its design document. Produces a numbered plan at commit granularity, then implements step-by-step with architect approval.
+description: Implement a feature from its design document on the active feature branch. Produces a numbered plan at commit granularity, then implements step-by-step with architect approval.
 ---
 
 # Implement
@@ -9,13 +9,14 @@ You are a senior software engineer. Your job is to implement the feature describ
 
 ## Process
 
-1. Read `docs/architecture.md` and the referenced feature design doc.
-2. Produce an implementation plan as a numbered checklist:
+1. Confirm you are on the feature branch created for this work. If you are on `main`, stop with `[BLOCKED: create or switch to the feature branch with /feature first]`.
+2. Read `docs/architecture.md` and the referenced feature design doc.
+3. Produce an implementation plan as a numbered checklist:
    - One item per logical change (git-commit granularity).
    - Each item: what changes, which files, which acceptance criteria it covers.
-3. Flag conflicts, ambiguities, or missing information as `[BLOCKED: description]`.
-4. **Wait for architect approval of the plan before writing code.**
-5. After implementation, change feature status to "implemented".
+4. Flag conflicts, ambiguities, or missing information as `[BLOCKED: description]`.
+5. **Wait for architect approval of the plan before writing code.**
+6. After implementation, change feature status to `implemented` on the feature branch.
 
 ## Implementation rules
 
@@ -31,3 +32,4 @@ You are a senior software engineer. Your job is to implement the feature describ
 - Before writing code, run `invoke test`. Failing tests from `/tdd-tests` define your implementation targets.
 - Do NOT delete or weaken existing tests to make them pass — fix the production code instead.
 - If you discover a test gap or a test that seems wrong, explain the issue and propose a resolution. **Wait for architect approval before modifying any test or adding new tests.**
+- Do not merge the branch as part of this skill. `/merge` handles integration after review approval.

@@ -1,36 +1,40 @@
 ---
 name: feature-review
-description: Review uncommitted changes against a feature spec and produce a written review report with actionable issues, then mark the feature spec status as reviewed.
+description: Review committed feature-branch changes against a feature spec and produce a written review report with actionable issues.
 ---
 
 # Feature Review
 
-You are a senior software architect performing a code review. Review all uncommitted changes against the feature specification and surface actionable issues only.
+You are a senior software architect performing a code review. Review the committed feature-branch diff against the feature specification and surface actionable issues only.
 
 ## Input
 
 This skill requires a **feature name** argument (e.g. `feature-review auth-login`).
 If the feature name is not provided, ask the user: **"Which feature spec should I review against?"** and wait for a response before proceeding.
+Use the same slug-style feature name passed to `/feature`.
 
 ## Available scripts
 
-- **`scripts/diff.sh`** — show all uncommitted changes (staged, unstaged, and untracked files)
+- **`scripts/diff.sh`** — show the committed diff for the current feature branch against `main`
 
 ## Deliverables
 
 - A review report at `docs/reviews/<feature-name>.md`
-- The feature spec status updated to `Status: reviewed` in `docs/features/<feature-name>.md`
+- The feature spec status updated to `Status: approved` or `Status: changes-requested` in `docs/features/<feature-name>.md`
 
 ## Process
 
 1. Read the feature spec at `docs/features/<feature-name>.md`. If it does not exist, tell the user and stop.
 2. Ensure `docs/reviews/` exists (create it if missing).
-3. Run `bash scripts/diff.sh` to capture all uncommitted changes.
-4. Run tests (`invoke test` by default) and capture pass/fail output. If you cannot run tests, explicitly say so in the report and set Outcome to `needs-changes`.
-5. Analyze against the review criteria below.
-6. Write/update the review report at `docs/reviews/<feature-name>.md` using the report format below.
-7. Update the feature spec status to `Status: reviewed` in `docs/features/<feature-name>.md` (add the Status line near the top if missing). Do this even if the Outcome is `needs-changes`.
-8. In chat, paste the short “Chat output” section below and point to the report file path.
+3. Verify you are on the feature branch for this work and that the working tree is clean. If there are uncommitted changes, stop and tell the user to commit or discard them before review.
+4. Run `bash scripts/diff.sh main` to capture the committed branch diff against `main`.
+5. Run tests (`invoke test` by default) and capture pass/fail output. If you cannot run tests, explicitly say so in the report and set Outcome to `needs-changes`.
+6. Analyze against the review criteria below.
+7. Write/update the review report at `docs/reviews/<feature-name>.md` using the report format below.
+8. Update the feature spec status in `docs/features/<feature-name>.md`:
+   - `Status: approved` if Outcome is `ok-to-merge`
+   - `Status: changes-requested` if Outcome is `needs-changes`
+9. In chat, paste the short “Chat output” section below and point to the report file path.
 
 ## Review criteria
 
@@ -63,9 +67,10 @@ Use this structure:
 #### Header
 - Feature: `<feature-name>`
 - Spec: `docs/features/<feature-name>.md`
+- Branch: current feature branch
 - Reviewed by: `LLM model name and version`
 - Reviewed at: ISO-8601 timestamp
-- Review scope: uncommitted changes (staged/unstaged/untracked)
+- Review scope: committed diff between current feature branch and `main`
 - Outcome: `needs-changes` or `ok-to-merge`
 
 Outcome rubric:
@@ -101,7 +106,7 @@ Less critical improvements regarding SOLID design and code quality. Same format 
 In chat, output:
 
 - `docs/reviews/<feature-name>.md` — written review report
-- `docs/features/<feature-name>.md` — status set to `reviewed`
+- `docs/features/<feature-name>.md` — status set to `approved` or `changes-requested`
 - 1 sentence stating the Outcome and the top 1-2 blocking issues (if any)
 
 ## Rules
@@ -109,4 +114,5 @@ In chat, output:
 - Maximum 10 bullets total across Critical and Suggestions.
 - Every bullet must cite a specific location (`file:line` or `file:function`).
 - No compliments — improvements only.
+- Review committed branch changes only. Do not review staged, unstaged, or untracked edits.
 - Do not modify production code. Updating `docs/features/<feature-name>.md` and writing `docs/reviews/<feature-name>.md` are allowed.
