@@ -34,7 +34,8 @@ robodev/
 │   └── commit/SKILL.md
 ├── docs/
 │   ├── architecture.md                          # This document
-│   ├── features/                                # Feature design docs
+│   ├── features/                                # Active feature design docs (cleaned up on merge)
+│   ├── reviews/                                 # Active feature review docs (cleaned up on merge)
 │   └── internal/user_stories.md                 # Requirements
 └── README.md
 ```
@@ -56,7 +57,7 @@ locations (e.g., `.claude/skills/`, `.github/copilot-instructions.md`).
 | `/implement` | Implement a feature design as code + tests | User-only | Inline |
 | `/commit` | Stage and commit feature-branch changes with conventional messages | User-only | Inline |
 | `/feature-review` | Review committed feature-branch diff vs `main` | Both | Fork (Explore subagent) |
-| `/merge` | Merge approved feature branch into `main` and delete it | User-only | Inline |
+| `/merge` | Merge approved feature branch into `main` and clean up temporary feature docs | User-only | Inline |
 | `/full-review` | Audit full codebase, score on 5 KPIs | Both | Fork (Explore subagent) |
 
 Code-changing skills require explicit user invocation. Review skills run in forked
@@ -82,7 +83,7 @@ flowchart LR
 4. **`/implement`** — agent reads architecture + design doc, proposes numbered plan at commit granularity, then implements on the feature branch. Gate: architect approves plan, then each step. Agent stops with `[BLOCKED]` on conflicts.
 5. **`/commit`** — agent groups feature-branch changes into atomic conventional commits (`type(scope): description`). Gate: architect approves before execution.
 6. **`/feature-review`** — forked subagent reviews the committed feature-branch diff against `main`. Output: Critical issues + Suggestions. Gate: address criticals before merge.
-7. **`/merge`** — agent merges the approved feature branch into `main` with a merge commit, marks the feature as `merged`, and deletes the local feature branch.
+7. **`/merge`** — agent merges the approved feature branch into `main` with a merge commit, removes the temporary feature spec/review docs in that merge commit, and deletes the local feature branch.
 8. **`/full-review`** (periodic) — forked subagent scores codebase on 5 KPIs, produces `docs/review.md`.
 
 ### Example flow

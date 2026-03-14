@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Merge the current feature branch into the base branch with a merge commit and delete it on success.
+# Merge the current feature branch into the base branch with a merge commit, remove
+# temporary feature docs, and delete it on success.
 # Usage: bash scripts/merge.sh --feature-name FEATURE_NAME [--base-branch BASE_BRANCH]
 
 set -euo pipefail
@@ -8,7 +9,8 @@ usage() {
   echo "Usage: bash scripts/merge.sh --feature-name FEATURE_NAME [--base-branch BASE_BRANCH]"
   echo ""
   echo "Merges the current feature branch into BASE_BRANCH (default: main) with a merge commit,"
-  echo "updates docs/features/<feature-name>.md to Status: merged, and deletes the merged feature branch."
+  echo "removes docs/features/<feature-name>.md and docs/reviews/<feature-name>.md when present,"
+  echo "and deletes the merged feature branch."
 }
 
 FEATURE_NAME=""
@@ -49,6 +51,7 @@ fi
 CURRENT_BRANCH="$(git branch --show-current)"
 FEATURE_BRANCH="feat/$FEATURE_NAME"
 FEATURE_DOC="docs/features/$FEATURE_NAME.md"
+REVIEW_DOC="docs/reviews/$FEATURE_NAME.md"
 
 if [[ -z "$CURRENT_BRANCH" ]]; then
   echo "Error: not on a branch."
@@ -70,11 +73,6 @@ if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -f "$FEATURE_DOC" ]]; then
-  echo "Error: feature doc '$FEATURE_DOC' does not exist."
-  exit 1
-fi
-
 if [[ "$(git rev-list --count "$BASE_BRANCH..$FEATURE_BRANCH")" -eq 0 ]]; then
   echo "Error: branch '$FEATURE_BRANCH' has no commits ahead of '$BASE_BRANCH'."
   exit 1
@@ -89,29 +87,8 @@ if ! git merge --no-ff --no-commit "$FEATURE_BRANCH"; then
   exit 1
 fi
 
-python - "$FEATURE_DOC" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-lines = path.read_text().splitlines()
-
-for idx, line in enumerate(lines):
-    if line.startswith("Status: "):
-        lines[idx] = "Status: merged"
-        break
-else:
-    if lines and lines[0].startswith("# "):
-        lines.insert(1, "")
-        lines.insert(2, "Status: merged")
-    else:
-        lines.insert(0, "Status: merged")
-
-path.write_text("\n".join(lines) + "\n")
-PY
-
-git add "$FEATURE_DOC"
+git rm --ignore-unmatch -- "$FEATURE_DOC" "$REVIEW_DOC"
 git commit --message "Merge branch '$FEATURE_BRANCH'"
 git branch -d "$FEATURE_BRANCH"
 
-echo "Merged '$FEATURE_BRANCH' into '$BASE_BRANCH' and deleted the local feature branch."
+echo "Merged '$FEATURE_BRANCH' into '$BASE_BRANCH', cleaned up temporary feature docs when present, and deleted the local feature branch."

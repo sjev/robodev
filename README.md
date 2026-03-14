@@ -39,7 +39,7 @@ After install, the following slash commands are available in your AI coding tool
 | `/implement` | Implement a feature design as code + tests |
 | `/commit` | Stage and commit on the active feature branch with conventional messages |
 | `/feature-review` | Review committed branch changes vs `main` |
-| `/merge` | Merge the approved feature branch into `main` with a merge commit, then delete it |
+| `/merge` | Merge the approved feature branch into `main` with a merge commit, then delete it and its temporary feature docs |
 | `/full-review` | Audit entire codebase on 5 KPIs |
 
 **Typical flow:**
@@ -60,10 +60,10 @@ See [docs/user_stories.md](docs/user_stories.md) for user stories for this proje
 Each step requires explicit architect approval before the agent proceeds.
 
 Notes:
-- `docs/features/<name>.md` includes a `Status:` field. The normal progression is `draft` → `implemented` → `approved` or `changes-requested` → `merged`.
+- `docs/features/<name>.md` includes a `Status:` field while the feature is in progress. The normal progression is `draft` → `implemented` → `approved` or `changes-requested`.
 - `/feature` creates or switches to `feat/<name>` from `main`, so the feature branch becomes the workspace for `/tdd-tests`, `/implement`, and `/commit`.
 - Feature specs are expected to include a Test Plan. `/feature-review` checks acceptance criteria and test coverage against the committed branch diff versus `main`.
-- `/merge` uses a merge commit and deletes the local feature branch after success.
+- `/merge` uses a merge commit, deletes `docs/features/<name>.md` and `docs/reviews/<name>.md` in that merge commit, and then deletes the local feature branch after success.
 - `/tdd-tests` and `/implement` assume your project’s test command is `invoke test` (adjust the skills if you use a different runner).
 
 See `docs/architecture.md` for the full workflow.

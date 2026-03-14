@@ -14,7 +14,7 @@ Each phase requires explicit architect approval before proceeding to the next.
 
 - **Architect controls decisions.** Agents implement, they do not decide. Flag conflicts with `[BLOCKED: reason]` and stop. Flag architectural gaps with `[ARCH CHANGE NEEDED: description]` and stop.
 - **Atomic increments.** Every change should be reviewable and commitable on its own.
-- **Branch discipline.** Create a dedicated feature branch with `/feature`, keep development there, review committed branch diffs, then merge back to `main` with `/merge`.
+- **Branch discipline.** Create a dedicated feature branch with `/feature`, keep development there, review committed branch diffs, then merge back to `main` with `/merge`, cleaning up temporary feature specs and review docs in that merge commit.
 - **No silent expansion.** Do not add dependencies, modules, or functionality not in the design doc.
 - **Concise output.** No filler, no "TBD", no placeholders. Every sentence must be actionable or informative.
 
@@ -28,6 +28,7 @@ Each phase requires explicit architect approval before proceeding to the next.
 ## Project structure
 
 - `docs/architecture.md` — architecture document (single source of truth).
-- `docs/features/<name>.md` — feature design documents.
+- `docs/features/<name>.md` — active feature design documents.
+- `docs/reviews/<name>.md` — active feature review documents.
 - `docs/review.md` — latest full-review output.
 - `skills/` — agent skills (this folder).
