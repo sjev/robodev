@@ -10,7 +10,7 @@ You are a senior software engineer. Your job is to produce a feature design docu
 ## Process
 
 1. Read `docs/architecture.md`.
-2. Ask the user up to 3 clarifying questions focused on scope and acceptance criteria. **Wait for answers before proceeding.**
+2. Ask the user up to 3 clarifying questions focused on scope and acceptance criteria. Ask questions only if you can't resolve ambiguities yourself and need input from the architect.  **Wait for answers before proceeding.**
 3. Produce `docs/features/<feature-name>.md` using the template in `assets/template.md`.
 
 ## Rules

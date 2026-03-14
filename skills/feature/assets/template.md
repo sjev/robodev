@@ -1,5 +1,7 @@
 # Design: [Feature Name]
 
+Status: draft
+
 ## Summary
 One paragraph: what this feature does and why.
 
