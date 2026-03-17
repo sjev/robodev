@@ -34,7 +34,6 @@ Validation is done by `skills-ref` (installed from `vendor/agentskills/skills-re
 ## Structure
 
 - `skills/` — skill definitions; one subdirectory per skill.
-- `skills/instructions.md` — project instructions template, copied to target projects on install.
 - `docs/architecture.md` — full workflow and design decisions.
 - `tasks.py` — `invoke` tasks (`init`, `validate`).
 - `vendor/` — cloned `agentskills/agentskills` repo (git-ignored, created by `invoke init`).
