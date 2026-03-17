@@ -38,3 +38,9 @@ Validation is done by `skills-ref` (installed from `vendor/agentskills/skills-re
 - `docs/architecture.md` — full workflow and design decisions.
 - `tasks.py` — `invoke` tasks (`init`, `validate`).
 - `vendor/` — cloned `agentskills/agentskills` repo (git-ignored, created by `invoke init`).
+
+## Documentation
+
+- [user stories](docs/user_stories.md)
+- [architecture](docs/architecture.md)
+- [claude code docs](https://code.claude.com/docs/llms.txt)
