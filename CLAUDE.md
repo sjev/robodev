@@ -34,6 +34,7 @@ Validation is done by `skills-ref` (installed from `vendor/agentskills/skills-re
 ## Structure
 
 - `skills/` — skill definitions; one subdirectory per skill.
+- `agents/` — Claude Code subagent definitions; installed to `.claude/agents/` in target projects.
 - `docs/architecture.md` — full workflow and design decisions.
 - `tasks.py` — `invoke` tasks (`init`, `validate`).
 - `vendor/` — cloned `agentskills/agentskills` repo (git-ignored, created by `invoke init`).

@@ -33,3 +33,7 @@ You are a senior software engineer. Your job is to implement the feature describ
 - Do NOT delete or weaken existing tests to make them pass — fix the production code instead.
 - If you discover a test gap or a test that seems wrong, explain the issue and propose a resolution. **Wait for architect approval before modifying any test or adding new tests.**
 - Do not merge the branch as part of this skill. `/merge` handles integration after review approval.
+
+## Standalone vs /develop
+
+When invoked standalone, this skill handles both tests and production code. Under `/develop`, the implementer subagent performs the same work as part of the delivery pipeline. `/tdd-tests` remains available for Red-phase-only work outside `/develop`.
