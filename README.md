@@ -32,21 +32,54 @@ Re-run the same command to update skills.
 
 ## Usage
 
-After install, the primary workflow commands are:
+After install, the workflow is designed to feel like a short architect-led delivery loop rather than a long checklist of agent commands.
+
+### Workflow overview
+
+1. **`/architect`** turns user stories into `docs/architecture.md`.
+2. **`/feature <name>`** creates or switches to `feat/<name>` and writes the feature spec in `docs/features/<name>.md`.
+3. **`/develop <name>`** delivers the feature against the approved docs: tests, implementation, commit planning, and review.
+4. **`/merge <name>`** merges the approved feature branch into `main`, removes the temporary feature docs in the merge commit, and deletes the local feature branch.
+
+This keeps the architect in control of design and merge decisions while pushing routine delivery work into a repeatable flow.
+
+### Approval gates
+
+Architect approval happens at workflow gates instead of every micro-step:
+
+- approve architecture before feature work
+- approve the feature spec before delivery
+- approve merge after reviewing the delivery output
+
+If the work uncovers ambiguity or a design mismatch, the flow is expected to stop and surface it instead of silently expanding scope.
+
+### Primary commands
 
 | Command | Description |
 |---|---|
 | `/architect` | Create or update `docs/architecture.md` from user stories |
 | `/feature` | Create or switch to `feat/<name>`, then design the feature into `docs/features/<name>.md` |
-| `/develop` | Orchestrate test writing, implementation, commit planning, and review for the active feature |
+| `/develop` | Deliver the active feature by orchestrating tests, implementation, commit planning, and review |
 | `/merge` | Merge the approved feature branch into `main` with a merge commit, then delete it and its temporary feature docs |
 | `/feature-review` | Optional standalone re-review of a feature branch when you want another pass before merge |
-| `/full-review` | Audit the entire codebase on 5 KPIs |
+| `/full-review` | Periodic whole-codebase audit on 5 KPIs |
 
-**Typical flow:**
+### Branch and document lifecycle
 
-Create `docs/user_stories.md`. Write them in a form "As a ... I want ... So that ..."
-See [docs/user_stories.md](docs/user_stories.md) for user stories for this project.
+- `docs/features/<name>.md` is the working feature spec and carries a `Status:` field while the feature is in progress.
+- `/feature` creates or switches to `feat/<name>` from `main`, so feature work stays off the main branch.
+- Feature specs are expected to include a Test Plan.
+- `/develop` writes or updates `docs/reviews/<name>.md` as part of delivery.
+- `/merge` removes `docs/features/<name>.md` and `docs/reviews/<name>.md` in the merge commit so `main` keeps the durable architecture but not temporary feature paperwork.
+
+### Claude-first, Copilot-compatible
+
+The workflow contract stays the same across tools, but the execution model differs:
+
+- **Claude Code** is the best-supported runtime. The main conversation stays in the architect/coordinator role, and `/develop` can delegate implementation, commit planning, and review to specialized workers.
+- **GitHub Copilot CLI** follows the same high-level phases and document contract, but runs them sequentially in one session instead of through project subagents.
+
+Create `docs/user_stories.md` in the form "As a ... I want ... So that ...". See [docs/user_stories.md](docs/user_stories.md) for this project's example stories.
 
 ```bash
 > /architect            # design or update architecture
@@ -55,33 +88,7 @@ See [docs/user_stories.md](docs/user_stories.md) for user stories for this proje
 > /merge my-feature
 ```
 
-Architect approval happens at workflow gates instead of every micro-step:
-
-- approve architecture before feature work
-- approve the feature spec before delivery
-- approve merge after reviewing the delivery output
-
-### Claude orchestration
-
-On Claude Code, the main conversation acts as the long-lived **architect/coordinator** and uses **Opus**.
-
-- `/architect` stays in the main Opus thread because it is decision-heavy and requires direct back-and-forth with the human architect.
-- `/feature` also stays in the main Opus thread so scope, acceptance criteria, and test plan quality are shaped in the highest-judgment context.
-- When `/develop` starts, the main Opus architect reads the approved architecture and feature spec, validates branch state, and then spawns workers in sequence:
-  - **Implementer** on **Sonnet** for test writing and production code changes
-  - **Commit planner** on **Haiku** for fast, cheap commit grouping and message drafting
-  - **Reviewer** on **Opus** for acceptance-criteria checks, test-coverage checks, and merge-readiness review
-- If the Opus reviewer returns `changes-requested`, the architect sends the work back to the Sonnet implementer, then reruns the Opus reviewer (maximum 2 rounds).
-- `/feature-review` and `/full-review` use the same **Opus** reviewer profile when run standalone.
-
-Notes:
-- `docs/features/<name>.md` includes a `Status:` field while the feature is in progress. The normal progression is `draft` → `implemented` → `approved` or `changes-requested`.
-- `/feature` creates or switches to `feat/<name>` from `main`, so the feature branch becomes the workspace for `/develop`.
-- `/develop` is the main delivery command. On Claude Code it delegates internally from the main Opus architect thread to project subagents. On Copilot CLI it follows the same contract in one command without project subagents.
-- Feature specs are expected to include a Test Plan. `/develop` writes or updates `docs/reviews/<name>.md` as part of the delivery flow; `/feature-review` is available when you want to rerun the reviewer independently.
-- `/merge` uses a merge commit, deletes `docs/features/<name>.md` and `docs/reviews/<name>.md` in that merge commit, and then deletes the local feature branch after success.
-
-See `docs/architecture.md` for the full workflow.
+See `docs/architecture.md` for the full workflow design, runtime details, and constraints.
 
 ## Development
 
