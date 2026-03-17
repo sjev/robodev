@@ -44,10 +44,25 @@ link_skills() {
     done
 }
 
+install_agents() {
+    dest_base="$1"
+    mkdir -p "$dest_base"
+    for agent_file in "$ROBODEV_DIR/agents"/*.md; do
+        [ -f "$agent_file" ] || continue
+        agent_name="$(basename "$agent_file")"
+        cp "$agent_file" "$dest_base/$agent_name"
+        info "  $agent_name → $dest_base/$agent_name"
+    done
+}
+
 install_claude() {
     printf '\nInstalling Claude Code skills\n'
     link_skills "$TARGET_DIR/.claude/skills"
     success "Claude Code skills linked in .claude/skills/"
+
+    printf '\nInstalling Claude Code agents\n'
+    install_agents "$TARGET_DIR/.claude/agents"
+    success "Claude Code agents copied to .claude/agents/"
 }
 
 install_copilot() {
@@ -80,7 +95,7 @@ scaffold_docs() {
 
     # Exclude skill symlinks from git tracking
     gitignore="$TARGET_DIR/.gitignore"
-    for entry in '.claude/skills/' '.github/skills/'; do
+    for entry in '.claude/skills/' '.claude/agents/' '.github/skills/'; do
         if [ -f "$gitignore" ] && grep -qF "$entry" "$gitignore"; then
             continue
         fi
