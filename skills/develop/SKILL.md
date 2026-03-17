@@ -24,7 +24,9 @@ Before starting, validate all of the following. Stop with `[BLOCKED: reason]` if
 
 Read `docs/architecture.md` and `docs/features/<name>.md`. Write or update tests from the feature test plan, then implement production code until acceptance criteria are satisfied or a blocker is found.
 
-Run tests after each logical step. If a blocker is found, stop with `[BLOCKED: reason]`.
+Run `inv lint` and `inv test` after each logical step.
+
+If a blocker is found, stop with `[BLOCKED: reason]`.
 
 Do NOT commit during this phase — leave changes in the working tree.
 
@@ -38,7 +40,10 @@ Inspect the working tree diff. Group changes into atomic conventional commits an
 
 ## Phase 3 — Review
 
-Compare the committed diff against the feature spec. Check acceptance criteria, test coverage, and code quality. Write the review report to `docs/reviews/<name>.md`. Update the feature spec status to `approved` or `changes-requested`.
+Run `inv lint` and `inv test`
+Compare the committed diff against the feature spec.
+
+Check acceptance criteria, test coverage, and code quality. Write the review report to `docs/reviews/<name>.md`. Update the feature spec status to `approved` or `changes-requested`.
 
 **Claude Code:** delegate to the `reviewer` subagent.
 
