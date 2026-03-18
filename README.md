@@ -4,61 +4,50 @@ Structured AI-assisted development. You design, AI delivers.
 
 Software engineering solved the decompose-then-verify problem decades ago — break down on the left, verify on the right, gate each transition. AI can now own the lower layers (implementation and testing) while you keep the architecture. The feature spec is the interface between human intent and AI execution.
 
-## The model
-
+## The workflow loop
 
 ```mermaid
 flowchart TB
 
-    US["user_stories.md"]
+    %% ==== DOCUMENTS ====
+    US[/"user_stories.md"/]
+    ARCH_DOC[/"architecture.md"/]
+    BACKLOG[/"feature_backlog.md"/]
+    FEAT_DOC[/"features/{feature}.md"/]
+    FEAT_REV[/"rieviews/{feature}.md"/]
+    FULL_REV[/"full_review.md"/]
 
-    %% LEFT SIDE (design)
-    subgraph LEFT ["DESIGN "]
-        ARCH["architecture.md<br>(/architect)"]
-        FEAT_LIST["feature backlog"]
-        FEAT["feature spec<br>(/feature)"]
-    end
+    %% ==== ACTIONS ====
+    ARCH["/architect"]
+    PLAN["plan"]
+    FEAT["/feature"]
+    DEV["/develop {feature}"]
+    MERGE["/merge"]
+    FULL["/full-review"]
+    UPDATE_ARCH["update"]
 
-    %% BOTTOM (build)
-    subgraph BUILD ["BUILD (AI)"]
-        DEV["code + tests + commits<br>(/develop)"]
-        REV["review"]
-    end
+    %% ==== FLOW (TRANSFORMATIONS) ====
+    US --> ARCH --> ARCH_DOC
+    ARCH_DOC --> PLAN --> BACKLOG
+    BACKLOG --> FEAT --> FEAT_DOC
+    FEAT_DOC --> DEV --> FEAT_REV
+    FEAT_REV --> MERGE --> FULL
+    FULL --> FULL_REV -->UPDATE_ARCH--> ARCH_DOC
 
-    %% RIGHT SIDE (validation)
-    subgraph RIGHT ["VALIDATION"]
-        FEATREV["approve delivery<br>(/feature-review)"]
-        FULL["system audit<br>(/full-review)"]
-    end
+    %% ==== STYLING ====
+    classDef doc fill:#f0f0f0,stroke:#888
+    classDef cmd fill:#dbeafe,stroke:#3b82f6
+    classDef manual fill:#8ce99a
 
-    %% FLOW
-    US --> ARCH
-    ARCH --> FEAT_LIST -->FEAT
-    FEAT --> DEV
-    DEV --> REV
-    REV --> FEATREV
-    FEATREV --> FULL
-
-    %% FEEDBACK LOOPS
-    REV -->|"changes (max 2×)"| DEV
-    FULL -.->|"findings"| ARCH
-```
-
-The architect decomposes at the top, hands off at the feature boundary, and AI handles everything below — surfacing back for merge approval.
-
-## The workflow loop
-
-```mermaid
-flowchart LR
-    A["/architect"] -->|approve| F["/feature name"]
-    F -->|approve spec| D["/develop name"]
-    D -->|review approved| M["/merge name"]
+    class US,ARCH_DOC,BACKLOG,FEAT_DOC,FEAT_REV,FULL_REV doc
+    class ARCH,FEAT,DEV,REVIEW,FULL,MERGE cmd
+    class ARCH,PLAN,UPDATE_ARCH manual
 ```
 
 ## What `/develop` automates
 
 ```mermaid
-flowchart LR
+flowchart TD
     I["implement<br>(tests + code)"] --> C["commit<br>(plan + create)"] --> R["review<br>(spec compliance)"]
     R -->|"changes requested<br>(max 2×)"| I
 ```
