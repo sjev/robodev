@@ -34,10 +34,10 @@ flowchart TD
     FEAT_REV --> MERGE --> FULL
     FULL --> FULL_REV --> UPDATE --> ARCH_DOC
 
-    %% ==== STYLING ====
-    classDef doc fill:#f0f0f0,stroke:#888;
-    classDef cmd fill:#dbeafe,stroke:#3b82f6;
-    classDef manual fill:#8ce99a,stroke:#2b8a3e;
+    %% ==== STYLING (theme-safe) ====
+    classDef doc fill:transparent,stroke:#888,stroke-width:1.5px;
+    classDef cmd fill:transparent,stroke:#3b82f6,stroke-width:1.5px;
+    classDef manual fill:transparent,stroke:#22c55e,stroke-width:2px;
 
     class US,ARCH_DOC,BACKLOG,FEAT_DOC,FEAT_REV,FULL_REV doc;
     class FEAT,DEV,MERGE,FULL cmd;
