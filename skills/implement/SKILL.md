@@ -36,4 +36,4 @@ You are a senior software engineer. Your job is to implement the feature describ
 
 ## Standalone vs /develop
 
-When invoked standalone, this skill handles both tests and production code. Under `/develop`, the implementer subagent performs the same work as part of the delivery pipeline. `/tdd-tests` remains available for Red-phase-only work outside `/develop`.
+When invoked standalone, this skill handles both tests and production code. Under `/develop`, the implementer subagent performs the same work as part of the delivery pipeline — skip the implementation plan checklist and architect approval; the approved feature spec is the plan. `/tdd-tests` remains available for Red-phase-only work outside `/develop`.
