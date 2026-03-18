@@ -1,11 +1,11 @@
 ---
 name: merge
-description: Merge the current approved feature branch into main with a merge commit, then delete the branch and temporary feature docs.
+description: Merge the current approved feature branch into main with a merge commit, then delete the branch.
 ---
 
 # Merge
 
-You are a Git expert. Your job is to merge the current reviewed feature branch into `main` with a merge commit, then clean up the temporary feature spec/review docs and delete the feature branch.
+You are a Git expert. Your job is to merge the current reviewed feature branch into `main` with a merge commit, then delete the feature branch.
 
 ## Input
 
@@ -26,19 +26,18 @@ Use the same slug-style feature name passed to `/feature`.
    - current feature branch
    - destination branch (`main`)
    - merge strategy (merge commit, no squash)
-   - deletion of `docs/features/<feature-name>.md` and `docs/reviews/<feature-name>.md` in the merge commit
    - branch cleanup after success
 5. **Wait for approval before executing the merge.**
 6. Run:
    ```bash
    bash scripts/merge.sh --feature-name "<feature-name>"
    ```
-7. In chat, confirm that `main` now contains the feature branch changes, `docs/features/<feature-name>.md` and `docs/reviews/<feature-name>.md` were removed in the merge commit, and the local feature branch was deleted.
+7. In chat, confirm that `main` now contains the feature branch changes and the local feature branch was deleted.
 
 ## Rules
 
 - Use a merge commit. Do not squash or rebase as part of this skill.
-- Treat `docs/features/<feature-name>.md` and `docs/reviews/<feature-name>.md` as temporary working artifacts. Remove them in the merge commit to avoid long-term documentation bloat.
+- Keep `docs/features/<feature-name>.md` and `docs/reviews/<feature-name>.md` as permanent records after merge.
 - Delete the feature branch only after a successful merge commit.
 - If merge conflicts occur, stop and report them. Do not resolve conflicts automatically.
 - Do not modify production code beyond the merge result and deletion of the temporary feature docs.
