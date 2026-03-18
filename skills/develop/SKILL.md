@@ -12,6 +12,15 @@ You are the architect/coordinator. Your job is to deliver a feature by orchestra
 This skill requires a **feature name** argument (e.g. `develop user-auth`).
 If the feature name is not provided, ask: **"Which feature should I develop?"** and wait.
 
+## Resuming an interrupted run
+
+If the architect instructs you to resume a partial run, inspect the branch state before proceeding:
+
+1. Run `git log --oneline` to see which commits exist on the branch.
+2. Check `Status` in `docs/features/<name>.md` to see if review has completed.
+
+Skip any phases that are already complete and continue from the next one.
+
 ## Prerequisites
 
 Before starting, validate all of the following. Stop with `[BLOCKED: reason]` if any fail.
@@ -50,7 +59,10 @@ Check acceptance criteria, test coverage, and code quality. Write the review rep
 ## Phase 4 — Loop
 
 - If the review returns `approved`, report success and point to `/merge <name>` as the next step.
-- If the review returns `changes-requested`, loop back to Phase 1 with the review findings. Maximum **2 review rounds**. If issues persist after the second round, stop with `[BLOCKED: review issues unresolved after 2 rounds]`.
+- If the review returns `changes-requested`, loop back to Phase 1 with the review findings. Maximum **2 review rounds**. If issues persist after the second round:
+  1. Set `Status: blocked` in `docs/features/<name>.md`.
+  2. If `docs/feature_backlog.md` exists, mark the feature as `blocked` there.
+  3. Stop with `[BLOCKED: review issues unresolved after 2 rounds — amend the spec or architecture before retrying]`.
 
 ## Rules
 

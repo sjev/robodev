@@ -54,26 +54,16 @@ The novelty: AI agents are the "development team," documents are the control int
 
 **Clean git history.** Atomic conventional commits maintained even in automated workflows.
 
-## What could be better
+## Resolved issues
 
-**Agent definitions duplicate skill content.** The three agent `.md` files largely repeat instructions from their referenced skills. A change to a skill must be mirrored in the agent definition or they drift.
+The following issues identified in the initial review have been addressed.
 
-**No documented recovery from `[BLOCKED]`.** When `/develop` hits `[BLOCKED]` after 2 rounds, there is no guidance on what happens next. The human likely knows (fix the spec, adjust scope), but documenting this would make the workflow self-contained.
+**Agent/skill duplication eliminated.** Agent `.md` files now contain only frontmatter (name, description, model, tools, skills). Process and rules live exclusively in the referenced skills. The `implementer` agent carries a single-line note for the one behavioral delta in orchestrated mode.
 
-**The `/implement` approval pause under `/develop`.** The implement skill waits for human approval of the checklist mid-execution. It is unclear whether `/develop` handles this pause or if the orchestration stalls. If the spec is already approved, this gate may be redundant in orchestrated mode.
+**`[BLOCKED]` recovery documented.** When `/develop` hits `[BLOCKED]` after 2 review rounds, it now sets `Status: blocked` on the feature spec, marks the feature blocked in the backlog (if present), and stops with an explanatory message directing the architect to amend the spec or architecture before retrying.
 
-**No session resumption.** If an agent session is interrupted (context limit, crash, blocker on item 7 of 10), there is no mechanism to detect partial progress and resume. Features are assumed to complete in one pass.
+**`/implement` approval clarified.** The "Standalone vs /develop" section in `skills/implement/SKILL.md` now explicitly states that the checklist and architect approval are skipped when running under `/develop` — the approved feature spec is the plan.
 
-**Mermaid diagram in README has a typo.** `rieviews/{feature}.md` should be `reviews/{feature}.md`.
+**Session resumption documented.** `skills/develop/SKILL.md` includes a "Resuming an interrupted run" section: when the architect instructs a resume, `/develop` inspects `git log` and the feature spec `Status` to determine the last completed phase and continues from the next.
 
-## Recommendations
-
-1. **Reduce duplication between agents and skills.** Agent `.md` files should reference skills and add only agent-specific config (model, tools, constraints). Process instructions belong in skills alone.
-
-2. **Document the `[BLOCKED]` recovery path.** A short section in the workflow or README covering what the human should do: amend the spec, adjust architecture, or manually intervene. Keeps the workflow self-explanatory.
-
-3. **Clarify the `/implement` approval step in orchestrated mode.** Either skip the human checklist approval when running under `/develop` (the spec was already approved), or document that `/develop` requires mid-stream interaction.
-
-4. **Consider session resumption.** Allow `/develop` to detect committed partial progress and resume from the last completed step. This becomes important as features grow beyond a single context window.
-
-5. **Fix the README typo.** `rieviews` → `reviews`.
+**README typo fixed.** `rieviews/{feature}.md` corrected to `reviews/{feature}.md` in the Mermaid diagram.

@@ -14,7 +14,7 @@ flowchart TB
     ARCH_DOC[/"architecture.md"/]
     BACKLOG[/"feature_backlog.md"/]
     FEAT_DOC[/"features/{feature}.md"/]
-    FEAT_REV[/"rieviews/{feature}.md"/]
+    FEAT_REV[/"reviews/{feature}.md"/]
     FULL_REV[/"full_review.md"/]
 
     %% ==== ACTIONS ====
