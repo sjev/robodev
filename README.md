@@ -18,12 +18,12 @@ flowchart TD
     FULL_REV[/full_review.md/]
 
     %% ==== ACTIONS ====
-    ARCH("architect")
+    ARCH("/architect")
     PLAN("plan")
-    FEAT("define feature")
-    DEV("develop")
-    MERGE("merge")
-    FULL("full review")
+    FEAT("/feature")
+    DEV("/develop")
+    MERGE("/merge")
+    FULL("/full-review")
     UPDATE("update arch")
 
     %% ==== FLOW ====
