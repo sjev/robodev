@@ -7,41 +7,41 @@ Software engineering solved the decompose-then-verify problem decades ago — br
 ## The workflow loop
 
 ```mermaid
-flowchart TB
+flowchart TD
 
     %% ==== DOCUMENTS ====
-    US[/"user_stories.md"/]
-    ARCH_DOC[/"architecture.md"/]
-    BACKLOG[/"feature_backlog.md"/]
-    FEAT_DOC[/"features/{feature}.md"/]
-    FEAT_REV[/"reviews/{feature}.md"/]
-    FULL_REV[/"full_review.md"/]
+    US[/user_stories.md/]
+    ARCH_DOC[/architecture.md/]
+    BACKLOG[/feature_backlog.md/]
+    FEAT_DOC[/features/feature.md/]
+    FEAT_REV[/reviews/feature.md/]
+    FULL_REV[/full_review.md/]
 
     %% ==== ACTIONS ====
-    ARCH["/architect"]
-    PLAN["plan"]
-    FEAT["/feature"]
-    DEV["/develop {feature}"]
-    MERGE["/merge"]
-    FULL["/full-review"]
-    UPDATE_ARCH["update"]
+    ARCH("architect")
+    PLAN("plan")
+    FEAT("define feature")
+    DEV("develop")
+    MERGE("merge")
+    FULL("full review")
+    UPDATE("update arch")
 
-    %% ==== FLOW (TRANSFORMATIONS) ====
+    %% ==== FLOW ====
     US --> ARCH --> ARCH_DOC
     ARCH_DOC --> PLAN --> BACKLOG
     BACKLOG --> FEAT --> FEAT_DOC
     FEAT_DOC --> DEV --> FEAT_REV
     FEAT_REV --> MERGE --> FULL
-    FULL --> FULL_REV -->UPDATE_ARCH--> ARCH_DOC
+    FULL --> FULL_REV --> UPDATE --> ARCH_DOC
 
     %% ==== STYLING ====
-    classDef doc fill:#f0f0f0,stroke:#888
-    classDef cmd fill:#dbeafe,stroke:#3b82f6
-    classDef manual fill:#8ce99a
+    classDef doc fill:#f0f0f0,stroke:#888;
+    classDef cmd fill:#dbeafe,stroke:#3b82f6;
+    classDef manual fill:#8ce99a,stroke:#2b8a3e;
 
-    class US,ARCH_DOC,BACKLOG,FEAT_DOC,FEAT_REV,FULL_REV doc
-    class ARCH,FEAT,DEV,REVIEW,FULL,MERGE cmd
-    class ARCH,PLAN,UPDATE_ARCH manual
+    class US,ARCH_DOC,BACKLOG,FEAT_DOC,FEAT_REV,FULL_REV doc;
+    class FEAT,DEV,MERGE,FULL cmd;
+    class ARCH,PLAN,UPDATE manual;
 ```
 
 ## What `/develop` automates
