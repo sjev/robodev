@@ -52,34 +52,28 @@ These details are internal to robodev's execution layer — not user-facing.
 | Role | Model | Rationale |
 |---|---|---|
 | Architect/coordinator | Opus | Highest-judgment work, user-facing |
-| Feature authoring | Opus | Acceptance criteria and test plans need careful reasoning |
-| Implementation | Sonnet | Heavy coding path, good balance of speed and quality |
-| Commit planning | Haiku | Low-risk grouping and message writing |
-| Review | Opus | Spec compliance requires high judgment |
+| Implementation + commits | Sonnet | Heavy coding path, good balance of speed and quality |
 
 ### Subagent lifecycle
 
-The main Opus architect process is the only long-lived thread. It spawns subagents during `/develop`:
+The main Opus thread is the only long-lived process. During `/develop` it:
 
-1. Validate prerequisites (architecture doc, feature spec with `Status: draft`, active `feat/<name>` branch)
-2. Prepare delivery plan from approved docs
-3. Spawn **implementer** (Sonnet) — writes/updates tests, then production code
-4. Spawn **commit planner** (Haiku) — inspects diff, proposes atomic conventional commits
-5. Spawn **reviewer** (Opus) — compares committed diff against feature spec, writes `docs/reviews/<name>.md`
-6. If reviewer returns `changes-requested`, loop back to implementer (max 2 rounds, then `[BLOCKED]`)
+1. Creates feature branch and writes lightweight spec (Phase 0–1)
+2. Spawns **implementer** (Sonnet) — writes tests, production code, and commits atomically (Phase 2)
+3. Reviews the result inline — compares diff against spec (Phase 3)
+4. If fixable issues found, loops back to implementer once
+5. Merges to main and cleans up the feature branch (Phase 4)
 
-Other commands (`/architect`, `/feature`, `/merge`, `/feature-review`, `/full-review`) run in the main Opus thread without spawning subagents.
+Other commands (`/architect`, `/commit`, `/review`) run in the main Opus thread without spawning subagents.
 
 ### Copilot runtime
 
-Same workflow contract, no subagents or model routing. `/develop` runs all phases sequentially in one thread on whatever model the Copilot session uses.
+Same workflow, no subagents or model routing. `/develop` runs all phases sequentially in one thread.
 
 ### Constraints
 
-1. **Agents do not make architectural decisions** — flag with `[BLOCKED]` or `[ARCH CHANGE NEEDED]`
-2. **Dedicated feature branches** — feature work on `feat/<name>`, never directly on `main`
-3. **Atomic conventional commits** — reviewable commit history even when commit planning is internal to `/develop`
-4. **Review before merge** — mandatory, but internal to `/develop`
-5. **No silent scope expansion** — no new dependencies/modules/behavior unless in the approved design
-6. **Concise documents** — no filler, no placeholders
-7. **Mermaid only** for diagrams
+1. **Flag, don't ask** — agents make assumptions and flag with `[ASSUMPTION]`, only stop for genuine blockers
+2. **Auto-branching** — feature branches are created and merged automatically by `/develop`
+3. **Atomic conventional commits** — reviewable history even in automated workflows
+4. **Self-review before merge** — automatic, internal to `/develop`
+5. **No silent scope expansion** — no new dependencies or modules without flagging as `[ASSUMPTION]`

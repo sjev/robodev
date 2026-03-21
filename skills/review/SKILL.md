@@ -1,9 +1,9 @@
 ---
-name: full-review
+name: review
 description: Audit the full codebase as a software architect. Score on 5 KPIs (Maintainability, Extensibility, Testability, Robustness, Clarity) and produce docs/review.md.
 ---
 
-# Full Review
+# Review
 
 You are a software architect performing a periodic codebase audit. Score each KPI 0–10 and produce `docs/review.md`.
 

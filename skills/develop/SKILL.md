@@ -1,72 +1,87 @@
 ---
 name: develop
-description: "Orchestrate feature delivery: implement, commit, review, and loop until approved or blocked."
+description: "Autopilot feature delivery: spec, implement, commit, review, merge — fully autonomous."
 ---
 
 # Develop
 
-You are the architect/coordinator. Your job is to deliver a feature by orchestrating four phases: implement, commit, review, and loop.
+You are the architect/coordinator. Your job is to deliver a feature end-to-end with minimal human intervention.
 
 ## Input
 
-This skill requires a **feature name** argument (e.g. `develop user-auth`).
-If the feature name is not provided, ask: **"Which feature should I develop?"** and wait.
+`/develop <description>` — a plain-English feature description or slug name.
+
+If a feature name is not provided, ask: **"What should I build?"** and wait.
 
 ## Resuming an interrupted run
 
-If the architect instructs you to resume a partial run, inspect the branch state before proceeding:
+1. Run `git log --oneline` to see commits on the branch.
+2. Check `Status` in `docs/features/<slug>.md`.
+3. Skip completed phases, continue from the next one.
 
-1. Run `git log --oneline` to see which commits exist on the branch.
-2. Check `Status` in `docs/features/<name>.md` to see if review has completed.
+## Phase 0 — Setup
 
-Skip any phases that are already complete and continue from the next one.
+1. Derive a slug from the description (e.g. `user-auth`, `csv-export`).
+2. Run `git checkout -b feat/<slug>` to create the feature branch. If it already exists, switch to it.
+3. If the working tree is dirty, stash changes first with `git stash`, then pop after switching.
 
-## Prerequisites
+## Phase 1 — Spec
 
-Before starting, validate all of the following. Stop with `[BLOCKED: reason]` if any fail.
+1. Read `docs/architecture.md` if it exists (not required).
+2. Write a lightweight feature spec to `docs/features/<slug>.md` using the template in `assets/spec-template.md`.
+3. Make reasonable assumptions — flag each with `[ASSUMPTION]` in the spec.
+4. Do NOT ask clarifying questions. If something is ambiguous, choose the simpler option and flag it.
+5. Commit the spec: `docs(<slug>): add feature spec`
 
-1. `docs/architecture.md` exists.
-2. `docs/features/<name>.md` exists with `Status: draft`.
-3. You are on the `feat/<name>` branch.
+## Phase 2 — Implement + Commit
 
-## Phase 1 — Implement
+Delegate to the **implementer** subagent (Sonnet). Provide it with:
+- The feature spec path
+- The architecture doc path (if it exists)
+- Instruction to write tests first, then production code
+- Instruction to commit atomically as it goes (conventional commits)
+- Instruction to run tests after each logical step
 
-Read `docs/architecture.md` and `docs/features/<name>.md`. Write or update tests from the feature test plan, then implement production code until acceptance criteria are satisfied or a blocker is found.
+If the implementer reports `[BLOCKED]`, stop and report the blocker to the user.
 
-Run `inv lint` and `inv test` after each logical step.
-
-If a blocker is found, stop with `[BLOCKED: reason]`.
-
-Do NOT commit during this phase — leave changes in the working tree.
-
-**Claude Code:** delegate to the `implementer` subagent.
-
-## Phase 2 — Commit
-
-Inspect the working tree diff. Group changes into atomic conventional commits and propose commit messages. Present the plan for architect approval. Create commits only after approval.
-
-**Claude Code:** delegate to the `commit-planner` subagent.
+**Copilot / single-thread mode:** run implementation directly — read the spec, write tests, implement, commit, run tests.
 
 ## Phase 3 — Review
 
-Run `inv lint` and `inv test`
-Compare the committed diff against the feature spec.
+1. Run the test suite (`inv test` or project-appropriate test command).
+2. Run `git diff main...HEAD` to see all changes on the feature branch.
+3. Compare against the feature spec:
+   - Are all acceptance criteria addressed?
+   - Do tests pass?
+   - Any obvious issues (broken imports, missing files, dead code)?
+4. Decision:
+   - **PASS** → update spec status to `approved`, proceed to Phase 4.
+   - **FIXABLE** → loop back to Phase 2 with specific fix instructions. Maximum **1 retry**.
+   - **BLOCKED** → update spec status to `blocked`, stop and report to user.
 
-Check acceptance criteria, test coverage, and code quality. Write the review report to `docs/reviews/<name>.md`. Update the feature spec status to `approved` or `changes-requested`.
+## Phase 4 — Merge
 
-**Claude Code:** delegate to the `reviewer` subagent.
+1. `git checkout main && git merge --no-ff feat/<slug>`
+2. `git branch -d feat/<slug>`
+3. If merge conflicts occur, attempt auto-resolution. If that fails, stop and report.
+4. Report summary: feature name, number of commits, what was built.
 
-## Phase 4 — Loop
+## When to stop
 
-- If the review returns `approved`, report success and point to `/merge <name>` as the next step.
-- If the review returns `changes-requested`, loop back to Phase 1 with the review findings. Maximum **2 review rounds**. If issues persist after the second round:
-  1. Set `Status: blocked` in `docs/features/<name>.md`.
-  2. If `docs/feature_backlog.md` exists, mark the feature as `blocked` there.
-  3. Stop with `[BLOCKED: review issues unresolved after 2 rounds — amend the spec or architecture before retrying]`.
+Stop and report to the user ONLY for:
+- Contradictions between the feature description and existing architecture
+- Test failures that can't be resolved after 3 attempts
+- Merge conflicts that can't be auto-resolved
+- Missing critical information that genuinely cannot be assumed
+
+Do NOT stop for:
+- Choosing between implementation approaches (pick the simpler one, flag with `[ASSUMPTION]`)
+- Creating new files or modules (just do it)
+- Commit message wording (use conventional commits)
 
 ## Rules
 
-- Do not make architectural decisions — flag ambiguity with `[BLOCKED]` or `[ARCH CHANGE NEEDED]`.
-- Do not add dependencies, modules, or behavior not in the approved spec.
-- Each phase must complete before the next begins.
-- Report progress to the user at the start of each phase.
+- No approval gates. No clarifying questions. Make assumptions and flag them.
+- Atomic conventional commits throughout.
+- Feature branches are temporary — created and merged automatically.
+- If the project has no test infrastructure, skip test-related steps and note it in the review.

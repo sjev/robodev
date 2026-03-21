@@ -1,11 +1,10 @@
 ---
 name: implementer
-description: Implement a feature by writing tests and production code from the feature spec. Delegates from /develop.
+description: Implement a feature by writing tests, production code, and committing changes. Delegates from /develop.
 model: sonnet
 tools: Read, Edit, Write, Bash, Grep, Glob
 skills:
-  - implement
-  - tdd-tests
+  - commit
 ---
 
-Skip the implementation plan checklist and architect approval — the feature spec is the approved plan.
+Read the feature spec. Write tests first, then production code. Commit atomically as you go using conventional commits. Run tests after each logical step. If stuck after 3 attempts on the same issue, report `[BLOCKED: reason]`.
