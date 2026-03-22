@@ -16,14 +16,16 @@ If a feature name is not provided, ask: **"What should I build?"** and wait.
 ## Resuming an interrupted run
 
 1. Run `git log --oneline` to see commits on the branch.
-2. Check `Status` in `docs/features/<slug>.md`.
+2. Check `Status` in `docs/features/<NNN-slug>.md`.
 3. Skip completed phases, continue from the next one.
 
 ## Phase 0 — Setup
 
 1. Derive a slug from the description (e.g. `user-auth`, `csv-export`).
-2. Run `git checkout -b feat/<slug>` to create the feature branch. If it already exists, switch to it.
-3. If the working tree is dirty, stash changes first with `git stash`, then pop after switching.
+2. Determine the numeric prefix: list files in `docs/features/` matching `[0-9][0-9][0-9]-*.md`, find the highest number, and use one higher. If no files exist, start at `001`. Format: `NNN-<slug>` (e.g. `001-user-auth`, `042-csv-export`).
+3. Use the full prefixed slug everywhere: branch name (`feat/NNN-<slug>`), spec file (`docs/features/NNN-<slug>.md`), and commit messages.
+4. Run `git checkout -b feat/<NNN-slug>` to create the feature branch. If it already exists, switch to it.
+5. If the working tree is dirty, stash changes first with `git stash`, then pop after switching.
 
 ## Phase 1 — Spec
 
