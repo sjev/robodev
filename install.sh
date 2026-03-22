@@ -33,6 +33,7 @@ main() {
     for skill_dir in "$tmp_dir/skills"/*/; do
         [ -f "${skill_dir}SKILL.md" ] || continue
         skill_name="$(basename "$skill_dir")"
+        rm -rf "$TARGET_DIR/.claude/skills/$skill_name"
         cp -r "$skill_dir" "$TARGET_DIR/.claude/skills/$skill_name"
         info "  $skill_name"
     done
