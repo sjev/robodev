@@ -1,6 +1,6 @@
 ---
 name: develop
-description: "Autopilot feature delivery: spec, implement, commit, review, merge — fully autonomous."
+description: "Autopilot feature delivery: spec, implement, commit, review — stops for manual testing before merge."
 ---
 
 # Develop
@@ -57,16 +57,9 @@ If the implementer reports `[BLOCKED]`, stop and report the blocker to the user.
    - Do tests pass?
    - Any obvious issues (broken imports, missing files, dead code)?
 4. Decision:
-   - **PASS** → update spec status to `approved`, proceed to Phase 4.
+   - **PASS** → update spec status to `approved`. Stop and tell the user: "Feature branch `feat/<NNN-slug>` is ready. Test it, then run `/merge <NNN-slug>` to merge."
    - **FIXABLE** → loop back to Phase 2 with specific fix instructions. Maximum **1 retry**.
    - **BLOCKED** → update spec status to `blocked`, stop and report to user.
-
-## Phase 4 — Merge
-
-1. `git checkout main && git merge --no-ff feat/<slug>`
-2. `git branch -d feat/<slug>`
-3. If merge conflicts occur, attempt auto-resolution. If that fails, stop and report.
-4. Report summary: feature name, number of commits, what was built.
 
 ## When to stop
 

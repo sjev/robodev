@@ -17,7 +17,8 @@ curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
 | Command | Purpose |
 |---|---|
 | `/architect` | Create/update architecture from user stories |
-| `/develop <description>` | Autopilot: spec → implement → commit → review → merge |
+| `/develop <description>` | Autopilot: spec → implement → commit → review (stops for manual testing) |
+| `/merge <NNN-slug>` | Merge reviewed feature branch to main |
 | `/commit` | Ad-hoc atomic conventional commits |
 | `/review` | Periodic codebase audit (5 KPIs) |
 
@@ -32,8 +33,9 @@ flowchart LR
     S[Setup<br>create branch] --> SP[Spec<br>write feature spec]
     SP --> I[Implement<br>tests + code + commits]
     I --> R[Review<br>check against spec]
-    R -->|pass| M[Merge<br>to main]
+    R -->|pass| T[Ready<br>manual testing]
     R -->|fixable| I
+    T -->|/merge| M[Merge<br>to main]
 ```
 
 | Phase | What happens | Model |
@@ -42,23 +44,23 @@ flowchart LR
 | **Spec** | Write lightweight feature spec, flag assumptions | Opus |
 | **Implement** | Write tests, production code, commit atomically | Sonnet |
 | **Review** | Compare diff against spec, check tests pass | Opus |
-| **Merge** | Merge to main, delete feature branch | Opus |
 
-The agent stops only for genuine blockers: architecture contradictions, unresolvable test failures, or merge conflicts.
+After review passes, `/develop` stops so you can test the branch manually. Run `/merge <NNN-slug>` when ready.
 
 ## Workflow overview
 
 ```mermaid
 flowchart TD
     US[/user_stories.md/] --> ARCH("/architect") --> ARCH_DOC[/architecture.md/]
-    ARCH_DOC --> DEV("/develop") --> MAIN[main branch]
+    ARCH_DOC --> DEV("/develop") --> FEAT[feat branch]
+    FEAT --> MRG("/merge") --> MAIN[main branch]
     MAIN --> REV("/review") --> REV_DOC[/review.md/]
 
     classDef doc fill:transparent,stroke:#888,stroke-width:1.5px;
     classDef cmd fill:transparent,stroke:#3b82f6,stroke-width:1.5px;
 
     class US,ARCH_DOC,REV_DOC doc;
-    class ARCH,DEV,REV cmd;
+    class ARCH,DEV,MRG,REV cmd;
 ```
 
 ## Development
