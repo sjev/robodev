@@ -11,7 +11,11 @@ You are the architect/coordinator. Your job is to deliver a feature end-to-end w
 
 `/develop <description>` — a plain-English feature description or slug name.
 
-If a feature name is not provided, ask: **"What should I build?"** and wait.
+If no description is provided:
+1. Read `docs/feature_backlog.md` if it exists.
+2. Pick the first `## NNN — title` item (lowest `NNN`).
+3. Confirm with the user: "Next up: **NNN — title** — description. Starting now." then proceed.
+4. If no backlog exists, ask: **"What should I build?"** and wait.
 
 ## Resuming an interrupted run
 
