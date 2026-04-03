@@ -1,5 +1,5 @@
 ---
-name: plan
+name: wbs
 description: Break down architecture.md into a prioritized feature backlog, skipping already-built features.
 ---
 
