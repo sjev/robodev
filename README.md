@@ -17,7 +17,7 @@ curl -LsSf https://raw.githubusercontent.com/sjev/robodev/main/install.sh | sh
 | Command | Purpose |
 |---|---|
 | `/architect` | Create/update architecture from user stories |
-| `/plan` | Break architecture into a prioritized feature backlog |
+| `/wbs` | Break architecture into a prioritized feature backlog |
 | `/develop <description>` | Autopilot: spec → implement → commit → review (stops for manual testing) |
 | `/merge <NNN-slug>` | Merge reviewed feature branch to main |
 | `/commit` | Ad-hoc atomic conventional commits |
@@ -53,7 +53,7 @@ After review passes, `/develop` stops so you can test the branch manually. Run `
 ```mermaid
 flowchart TD
     US[/user_stories.md/] --> ARCH("/architect") --> ARCH_DOC[/architecture.md/]
-    ARCH_DOC --> PLAN("/plan") --> BACKLOG[/feature_backlog.md/]
+    ARCH_DOC --> PLAN("/wbs") --> BACKLOG[/feature_backlog.md/]
     BACKLOG --> DEV("/develop") --> FEAT[feat branch]
     FEAT --> MRG("/merge") --> MAIN[main branch]
     MAIN --> REV("/review") --> REV_DOC[/review.md/]
