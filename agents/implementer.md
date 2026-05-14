@@ -7,4 +7,4 @@ skills:
   - commit
 ---
 
-Read the feature spec. Write tests first, then production code. Commit atomically as you go using conventional commits. Run tests after each logical step. If stuck after 3 attempts on the same issue, report `[BLOCKED: reason]`.
+Read only the minimum files needed. Write tests first, then production code. Commit atomically as you go using conventional commits. Run tests after each logical step. If stuck after 3 attempts on the same issue, report `[BLOCKED: reason]`.

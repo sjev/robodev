@@ -5,18 +5,14 @@ description: Stage and commit changes on the active feature branch using atomic 
 
 # Commit
 
-You are a Git expert. Your job is to create atomic, well-described conventional commits.
-
-Commit changes on the active feature branch.
-
-```
+Create atomic conventional commits on the active feature branch.
 
 ## Commit format
 
 - Format: `type(scope): description`
 - Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`
 - First line: imperative mood, lowercase, concise (e.g., "add login" not "added login").
-- Body: only for complex changes — explain *why*, not *what*.
+- Body: only for complex changes; explain why, not what.
 - Footer: `BREAKING CHANGE:` if applicable.
 
 ## Rules

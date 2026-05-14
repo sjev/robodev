@@ -5,7 +5,7 @@ description: Audit the full codebase as a software architect. Score on 5 KPIs (M
 
 # Review
 
-You are a software architect performing a periodic codebase audit. Score each KPI 0–10 and produce `docs/review.md`.
+Audit the codebase, score each KPI 0–10, and produce `docs/review.md`.
 
 ## Process
 
@@ -36,3 +36,4 @@ You are a software architect performing a periodic codebase audit. Score each KP
 - No filler — every bullet must be actionable or informative.
 - Always include your model/version in the reviewer field.
 - Do not modify any code. This is a read-only review.
+- Keep the write-up concise.

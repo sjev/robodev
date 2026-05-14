@@ -5,7 +5,7 @@ description: "Autopilot feature delivery: spec, implement, commit, review — st
 
 # Develop
 
-You are the architect/coordinator. Your job is to deliver a feature end-to-end with minimal human intervention.
+Deliver a feature end-to-end with minimal human intervention.
 
 ## Input
 
@@ -14,8 +14,8 @@ You are the architect/coordinator. Your job is to deliver a feature end-to-end w
 If no description is provided:
 1. Read `docs/feature_backlog.md` if it exists.
 2. Pick the first `## NNN — title` item (lowest `NNN`).
-3. Confirm with the user: "Next up: **NNN — title** — description. Starting now." then proceed.
-4. If no backlog exists, ask: **"What should I build?"** and wait.
+3. Announce: "Next up: **NNN — title** — description. Starting now." then proceed.
+4. If no backlog exists, ask: "What should I build?" and wait.
 
 ## Resuming an interrupted run
 
@@ -34,10 +34,10 @@ If no description is provided:
 ## Phase 1 — Spec
 
 1. Read `docs/architecture.md` if it exists (not required).
-2. Write a lightweight feature spec to `docs/features/<slug>.md` using the template in `assets/spec-template.md`.
+2. Write a lightweight feature spec to `docs/features/<NNN-slug>.md` using the template in `assets/spec-template.md`.
 3. Make reasonable assumptions — flag each with `[ASSUMPTION]` in the spec.
-4. Do NOT ask clarifying questions. If something is ambiguous, choose the simpler option and flag it.
-5. Commit the spec: `docs(<slug>): add feature spec`
+4. Ask only if a missing answer would materially change the result and cannot be inferred. Otherwise choose the simpler option and flag it.
+5. Commit the spec: `docs(<NNN-slug>): add feature spec`
 
 ## Phase 2 — Implement + Commit
 
@@ -47,6 +47,7 @@ Delegate to the **implementer** subagent (Sonnet). Provide it with:
 - Instruction to write tests first, then production code
 - Instruction to commit atomically as it goes (conventional commits)
 - Instruction to run tests after each logical step
+- Instruction to read only the minimum files needed
 
 If the implementer reports `[BLOCKED]`, stop and report the blocker to the user.
 
@@ -80,7 +81,8 @@ Do NOT stop for:
 
 ## Rules
 
-- No approval gates. No clarifying questions. Make assumptions and flag them.
+- No approval gates.
+- Make assumptions and flag them.
 - Atomic conventional commits throughout.
 - Feature branches are temporary — created and merged automatically.
 - If the project has no test infrastructure, skip test-related steps and note it in the review.

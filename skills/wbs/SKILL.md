@@ -5,7 +5,7 @@ description: Break down architecture.md into a prioritized feature backlog, skip
 
 # Plan
 
-You are a senior software architect doing work breakdown. Your job is to produce or update `docs/feature_backlog.md`.
+Produce or update `docs/feature_backlog.md`.
 
 ## Process
 
@@ -55,7 +55,7 @@ If an item depends on another, note it on a second line as `depends: NNN`.
 
 ## Rules
 
-- If you come across significant trade-offs or dilemmas, PAUSE, explain the issue, and seek guidance.
+- Ask only if a trade-off materially changes scope or ordering and cannot be resolved from the architecture.
 - Preserve items already in `docs/feature_backlog.md` that are not yet in `docs/features/` — only add, reorder, or remove items, do not rewrite existing descriptions without good reason.
 - Each item is a `## NNN — slug-style-title` subheading followed by one sentence (and optionally a `depends:` line).
 - Keep descriptions to one sentence — just enough for the coding agent to understand the scope.

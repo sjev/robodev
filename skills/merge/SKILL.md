@@ -11,7 +11,7 @@ Merge a completed feature branch into `main` and delete it.
 
 `/merge <NNN-slug>` — the prefixed feature slug (e.g. `042-csv-export`).
 
-If no slug is provided, check the current branch (`git branch --show-current`). If it matches `feat/<NNN-slug>`, derive the slug from it. Otherwise, list feature branches and ask: **"Which branch should I merge?"**
+If no slug is provided, check the current branch (`git branch --show-current`). If it matches `feat/<NNN-slug>`, derive the slug from it. Otherwise, list feature branches and ask: "Which branch should I merge?"
 
 ## Steps
 

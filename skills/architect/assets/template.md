@@ -21,7 +21,7 @@ For each module: what it owns, its public interface, and what it must NOT do.
 Communication patterns between modules (sync/async, events, RPC).
 
 ## Key architectural decisions
-For each decision:
+For each important decision:
 - **Decision:** what was chosen
 - **Alternatives considered:** what else was evaluated
 - **Rationale:** why this option
@@ -30,4 +30,4 @@ For each decision:
 Tech stack rules, naming conventions, forbidden libraries, project-wide patterns.
 
 ## Open questions
-Unresolved items to decide at feature-design time.
+Only unresolved items that must be decided later.
