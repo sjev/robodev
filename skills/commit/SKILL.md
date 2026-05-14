@@ -17,6 +17,7 @@ Create atomic conventional commits on the active feature branch.
 
 ## Rules
 
+- Never commit directly on `main` or `master` — switch to or create a feature branch first.
 - Scope is optional but encouraged when a module or file is the clear focus.
 - If changes span multiple logical tasks, create separate commits.
 - Each commit must be independently reviewable.

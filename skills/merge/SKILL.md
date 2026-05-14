@@ -15,7 +15,7 @@ If no slug is provided, check the current branch (`git branch --show-current`). 
 
 ## Steps
 
-1. Confirm the feature spec at `docs/features/<NNN-slug>.md` has status `approved`. If not, stop and report.
+1. Confirm the feature spec at `docs/wip/features/<NNN-slug>.md` has status `approved`. If not, stop and report.
 2. `git checkout main`
 3. `git merge --no-ff feat/<NNN-slug>`
 4. If merge conflicts occur, attempt auto-resolution. If that fails, stop and report the conflicting files.

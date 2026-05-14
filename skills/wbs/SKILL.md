@@ -5,19 +5,19 @@ description: Break down architecture.md into a prioritized feature backlog, skip
 
 # Plan
 
-Produce or update `docs/feature_backlog.md`.
+Produce or update `docs/wip/feature_backlog.md`.
 
 ## Process
 
 1. Read `docs/architecture.md`. This is the source of truth for what needs to be built.
-2. Scan `docs/features/` for existing feature spec files (pattern: `[0-9][0-9][0-9]-*.md`). These are already built — do not include them in the backlog.
-3. Find the highest `NNN` number across both `docs/features/` files and any existing `docs/feature_backlog.md` entries. New items start from one higher.
-4. Produce `docs/feature_backlog.md` with this structure:
+2. Scan `docs/wip/features/` for existing feature spec files (pattern: `[0-9][0-9][0-9]-*.md`). These are already built — do not include them in the backlog.
+3. Find the highest `NNN` number across both `docs/wip/features/` files and any existing `docs/wip/feature_backlog.md` entries. New items start from one higher.
+4. Produce `docs/wip/feature_backlog.md` with this structure:
 
 ```markdown
 # Feature Backlog
 
-Completed features are tracked in `docs/features/` and removed from this list.
+Completed features are tracked in `docs/wip/features/` and removed from this list.
 
 ---
 
@@ -36,7 +36,7 @@ depends: NNN
 Cover everything in the architecture that is not yet implemented. Group logically — infrastructure first, then features, then integrations.
 
 Do not add items for:
-- Work already represented by a file in `docs/features/`
+- Work already represented by a file in `docs/wip/features/`
 - Documentation, comments, or cleanup unless explicitly in the architecture
 - Vague future ideas not grounded in the architecture
 
@@ -56,7 +56,7 @@ If an item depends on another, note it on a second line as `depends: NNN`.
 ## Rules
 
 - Ask only if a trade-off materially changes scope or ordering and cannot be resolved from the architecture.
-- Preserve items already in `docs/feature_backlog.md` that are not yet in `docs/features/` — only add, reorder, or remove items, do not rewrite existing descriptions without good reason.
+- Preserve items already in `docs/wip/feature_backlog.md` that are not yet in `docs/wip/features/` — only add, reorder, or remove items, do not rewrite existing descriptions without good reason.
 - Each item is a `## NNN — slug-style-title` subheading followed by one sentence (and optionally a `depends:` line).
 - Keep descriptions to one sentence — just enough for the coding agent to understand the scope.
-- Do not mark any item as done. Completed work is tracked in `docs/features/`, not here.
+- Do not mark any item as done. Completed work is tracked in `docs/wip/features/`, not here.

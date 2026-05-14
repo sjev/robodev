@@ -12,7 +12,7 @@ Deliver a feature end-to-end with minimal human intervention.
 `/develop <description>` — a plain-English feature description or slug name.
 
 If no description is provided:
-1. Read `docs/feature_backlog.md` if it exists.
+1. Read `docs/wip/feature_backlog.md` if it exists.
 2. Pick the first `## NNN — title` item (lowest `NNN`).
 3. Announce: "Next up: **NNN — title** — description. Starting now." then proceed.
 4. If no backlog exists, ask: "What should I build?" and wait.
@@ -20,69 +20,45 @@ If no description is provided:
 ## Resuming an interrupted run
 
 1. Run `git log --oneline` to see commits on the branch.
-2. Check `Status` in `docs/features/<NNN-slug>.md`.
+2. Check `Status` in `docs/wip/features/<NNN-slug>.md`.
 3. Skip completed phases, continue from the next one.
 
 ## Phase 0 — Setup
 
 1. Derive a slug from the description (e.g. `user-auth`, `csv-export`).
-2. Determine the numeric prefix: list files in `docs/features/` matching `[0-9][0-9][0-9]-*.md`, find the highest number, and use one higher. If no files exist, start at `001`. Format: `NNN-<slug>` (e.g. `001-user-auth`, `042-csv-export`).
-3. Use the full prefixed slug everywhere: branch name (`feat/NNN-<slug>`), spec file (`docs/features/NNN-<slug>.md`), and commit messages.
-4. Run `git checkout -b feat/<NNN-slug>` to create the feature branch. If it already exists, switch to it.
-5. If the working tree is dirty, stash changes first with `git stash`, then pop after switching.
+2. Find the highest `NNN` in `docs/wip/features/` matching `[0-9][0-9][0-9]-*.md` and use one higher (start at `001` if empty). Use the full `NNN-<slug>` everywhere: branch (`feat/NNN-<slug>`), spec file (`docs/wip/features/NNN-<slug>.md`), commit messages.
+3. `git checkout -b feat/<NNN-slug>` (or switch to it if it exists). Stash and pop if the working tree is dirty.
 
 ## Phase 1 — Spec
 
-1. Read `docs/architecture.md` if it exists (not required).
-2. Write a lightweight feature spec to `docs/features/<NNN-slug>.md` using the template in `assets/spec-template.md`.
-3. Make reasonable assumptions — flag each with `[ASSUMPTION]` in the spec.
-4. Ask only if a missing answer would materially change the result and cannot be inferred. Otherwise choose the simpler option and flag it.
-5. Commit the spec: `docs(<NNN-slug>): add feature spec`
+1. Read `docs/architecture.md` if it exists.
+2. Write a lightweight feature spec to `docs/wip/features/<NNN-slug>.md` using `assets/spec-template.md`.
+3. Make reasonable assumptions — flag each with `[ASSUMPTION]`. Ask only if a missing answer would materially change the result.
+4. Commit the spec: `docs(<NNN-slug>): add feature spec`
 
 ## Phase 2 — Implement + Commit
 
-Delegate to the **implementer** subagent (Sonnet). Provide it with:
-- The feature spec path
-- The architecture doc path (if it exists)
-- Instruction to write tests first, then production code
-- Instruction to commit atomically as it goes (conventional commits)
-- Instruction to run tests after each logical step
-- Instruction to read only the minimum files needed
+Delegate to the **implementer** subagent (Sonnet) with:
+- The feature spec path and architecture doc path (if any)
+- Instructions: tests first, atomic conventional commits, run tests after each step, read only what's needed
 
-If the implementer reports `[BLOCKED]`, stop and report the blocker to the user.
-
-**Copilot / single-thread mode:** run implementation directly — read the spec, write tests, implement, commit, run tests.
+If the implementer reports `[BLOCKED]`, stop and report to the user.
 
 ## Phase 3 — Review
 
-1. Run the test suite (`inv test` or project-appropriate test command).
-2. Run `git diff main...HEAD` to see all changes on the feature branch.
-3. Compare against the feature spec:
-   - Are all acceptance criteria addressed?
-   - Do tests pass?
-   - Any obvious issues (broken imports, missing files, dead code)?
-4. Decision:
-   - **PASS** → update spec status to `approved`. Stop and tell the user: "Feature branch `feat/<NNN-slug>` is ready. Test it, then run `/merge <NNN-slug>` to merge."
+1. Run the test suite.
+2. Run `git diff main...HEAD` and compare against the spec's acceptance criteria.
+3. Decision:
+   - **PASS** → update spec status to `approved`. Tell the user: "Feature branch `feat/<NNN-slug>` is ready. Test it, then run `/merge <NNN-slug>` to merge."
    - **FIXABLE** → loop back to Phase 2 with specific fix instructions. Maximum **1 retry**.
-   - **BLOCKED** → update spec status to `blocked`, stop and report to user.
-
-## When to stop
-
-Stop and report to the user ONLY for:
-- Contradictions between the feature description and existing architecture
-- Test failures that can't be resolved after 3 attempts
-- Merge conflicts that can't be auto-resolved
-- Missing critical information that genuinely cannot be assumed
-
-Do NOT stop for:
-- Choosing between implementation approaches (pick the simpler one, flag with `[ASSUMPTION]`)
-- Creating new files or modules (just do it)
-- Commit message wording (use conventional commits)
+   - **BLOCKED** → update spec status to `blocked`, stop and report.
 
 ## Rules
 
-- No approval gates.
-- Make assumptions and flag them.
+- No approval gates. Make assumptions and flag them.
 - Atomic conventional commits throughout.
-- Feature branches are temporary — created and merged automatically.
-- If the project has no test infrastructure, skip test-related steps and note it in the review.
+- Skip test-related steps if the project has no test infrastructure (note it in the review).
+- Stop and report only for: architecture contradictions, unresolved test failures after 3 attempts, unresolvable merge conflicts, or missing info that genuinely cannot be assumed.
+- Do NOT stop to pick between approaches or to confirm new files — just choose the simpler option.
+
+> **Copilot / single-thread mode:** if no subagent is available, run Phase 2 directly.
